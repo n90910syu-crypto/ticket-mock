@@ -283,8 +283,7 @@
       saveEventBtn.style.display = 'none';
 
       try {
-        const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
-        const response = await fetch(proxyUrl);
+        const response = await fetch(url);
 
         if (!response.ok) {
           throw new Error('ネットワークエラー: ' + response.status);
@@ -349,7 +348,7 @@
         fetchStatus.textContent = '取得しました';
       } catch (err) {
         console.error(err);
-        fetchStatus.textContent = '取得に失敗しました(プロキシが混雑している可能性があります。少し待って再試行してください)';
+        fetchStatus.textContent = '取得に失敗しました: ' + err.message;
       }
     });
 
