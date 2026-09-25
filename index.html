@@ -140,6 +140,45 @@
       color: #888;
       text-align: center;
     }
+
+    .picker-row {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      margin-top: 10px;
+      flex-wrap: wrap;
+    }
+
+    .picker-row select {
+      flex: 1;
+      min-width: 60px;
+      font-size: 15px;
+      padding: 10px 6px;
+      border-radius: 8px;
+      border: 1px solid #ccc;
+    }
+
+    .picker-row span {
+      font-size: 14px;
+      color: #666;
+      flex: none;
+    }
+
+    .picker-label {
+      margin-top: 12px;
+      font-size: 13px;
+      font-weight: 700;
+      color: #555;
+    }
+
+    .picker-btn {
+      margin-top: 8px;
+      background: #eee;
+      color: #333;
+      height: 40px;
+      line-height: 40px;
+      font-size: 14px;
+    }
   </style>
 </head>
 
@@ -190,8 +229,34 @@
     <label for="eventDateInput" style="margin-top:16px;">日時</label>
     <input id="eventDateInput" type="text" placeholder="自動取得 or 手入力">
 
+    <div class="picker-row">
+      <select id="dateYearSelect"></select><span>年</span>
+      <select id="dateMonthSelect"></select><span>月</span>
+      <select id="dateDaySelect"></select><span>日</span>
+      <select id="dateHourSelect"></select><span>:</span>
+      <select id="dateMinuteSelect"></select>
+    </div>
+    <button type="button" class="btn picker-btn" id="dateApplyBtn">
+      この日時を反映
+    </button>
+
     <label for="eventShowtimeInput" style="margin-top:16px;">開場/開演</label>
     <input id="eventShowtimeInput" type="text" placeholder="自動取得 or 手入力">
+
+    <div class="picker-label">開場</div>
+    <div class="picker-row">
+      <select id="openHourSelect"></select><span>:</span>
+      <select id="openMinuteSelect"></select>
+    </div>
+
+    <div class="picker-label">開演</div>
+    <div class="picker-row">
+      <select id="startHourSelect"></select><span>:</span>
+      <select id="startMinuteSelect"></select>
+    </div>
+    <button type="button" class="btn picker-btn" id="showtimeApplyBtn">
+      この時刻を反映
+    </button>
 
     <label for="eventImageInput" style="margin-top:16px;">画像URL</label>
     <input id="eventImageInput" type="text" placeholder="自動取得 or 手入力">
@@ -250,13 +315,7 @@
     restore(phoneInput, 'userPhone', '090-3728-9947');
     restore(addressInput, 'userAddress', '〒102-8353 東京都千代田区六番町4番地5 SME六番町ビル');
 
-    restore(document.getElementById('eventTitleInput'), 'eventTitle', '');
-    restore(document.getElementById('eventTicketTypeInput'), 'eventTicketType', '');
-    restore(document.getElementById('eventDateInput'), 'eventDate', '');
-    restore(document.getElementById('eventShowtimeInput'), 'eventShowtime', '');
-    restore(document.getElementById('eventImageInput'), 'eventImage', '');
-    restore(document.getElementById('eventVenueInput'), 'eventVenue', '');
-    restore(document.getElementById('eventVenueMapInput'), 'eventVenueMapUrl', '');
+    // イベント情報欄は毎回リセット(ページを開き直したら空の状態から始める)
 
     // GOは常に「保存」を押すまで無効。ページを開き直した時点で毎回無効に戻す。
 
@@ -276,6 +335,60 @@
     const eventVenueMapInput = document.getElementById('eventVenueMapInput');
     const resultImage = document.getElementById('resultImage');
     const saveAllBtn = document.getElementById('saveAllBtn');
+
+    const dateYearSelect = document.getElementById('dateYearSelect');
+    const dateMonthSelect = document.getElementById('dateMonthSelect');
+    const dateDaySelect = document.getElementById('dateDaySelect');
+    const dateHourSelect = document.getElementById('dateHourSelect');
+    const dateMinuteSelect = document.getElementById('dateMinuteSelect');
+    const dateApplyBtn = document.getElementById('dateApplyBtn');
+
+    const openHourSelect = document.getElementById('openHourSelect');
+    const openMinuteSelect = document.getElementById('openMinuteSelect');
+    const startHourSelect = document.getElementById('startHourSelect');
+    const startMinuteSelect = document.getElementById('startMinuteSelect');
+    const showtimeApplyBtn = document.getElementById('showtimeApplyBtn');
+
+    // プルダウンに選択肢を詰める共通処理
+    function fillSelectRange(select, start, end, pad) {
+      for (let i = start; i <= end; i++) {
+        const opt = document.createElement('option');
+        const val = pad ? String(i).padStart(pad, '0') : String(i);
+        opt.value = val;
+        opt.textContent = val;
+        select.appendChild(opt);
+      }
+    }
+
+    const nowForPicker = new Date();
+    fillSelectRange(dateYearSelect, nowForPicker.getFullYear() - 1, nowForPicker.getFullYear() + 3, 0);
+    fillSelectRange(dateMonthSelect, 1, 12, 2);
+    fillSelectRange(dateDaySelect, 1, 31, 2);
+    fillSelectRange(dateHourSelect, 0, 23, 2);
+    fillSelectRange(dateMinuteSelect, 0, 59, 2);
+    fillSelectRange(openHourSelect, 0, 23, 2);
+    fillSelectRange(openMinuteSelect, 0, 59, 2);
+    fillSelectRange(startHourSelect, 0, 23, 2);
+    fillSelectRange(startMinuteSelect, 0, 59, 2);
+
+    // 選んだ日時をテキスト欄に反映(取得済みでも上書き可能)
+    dateApplyBtn.addEventListener('click', function () {
+      eventDateInput.value =
+        dateYearSelect.value + '年' +
+        dateMonthSelect.value + '月' +
+        dateDaySelect.value + '日' +
+        dateHourSelect.value + ':' +
+        dateMinuteSelect.value;
+      goLink.classList.add('disabled');
+    });
+
+    // 選んだ開場/開演時刻をテキスト欄に反映(取得済みでも上書き可能)
+    showtimeApplyBtn.addEventListener('click', function () {
+      eventShowtimeInput.value =
+        '開場 ' + openHourSelect.value + ':' + openMinuteSelect.value +
+        '／開演 ' + startHourSelect.value + ':' + startMinuteSelect.value;
+      goLink.classList.add('disabled');
+    });
 
     // <br>より前のテキストだけを取り出す(ネストしたdivや価格部分を除外)
     function extractLeadingText(el) {
