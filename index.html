@@ -306,15 +306,29 @@
       let doc = null;
       let fetchError = null;
 
-      try {
-        const response = await fetch(url);
-        if (!response.ok) {
-          throw new Error('ネットワークエラー: ' + response.status);
+      // 複数の取得方法を順番に試す(1つ失敗しても次を試す)
+      const attempts = [
+        function () { return fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)); },
+        function () { return fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url)); },
+        function () { return fetch(url); }
+      ];
+
+      for (const attempt of attempts) {
+        try {
+          const response = await attempt();
+          if (!response.ok) {
+            throw new Error('ネットワークエラー: ' + response.status);
+          }
+          const html = await response.text();
+          if (!html || html.length < 100) {
+            throw new Error('取得内容が空でした');
+          }
+          doc = new DOMParser().parseFromString(html, 'text/html');
+          fetchError = null;
+          break;
+        } catch (err) {
+          fetchError = err;
         }
-        const html = await response.text();
-        doc = new DOMParser().parseFromString(html, 'text/html');
-      } catch (err) {
-        fetchError = err;
       }
 
       // 取得できなかった項目は空欄のまま(既存の入力があれば消さない)。
