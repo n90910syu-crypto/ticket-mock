@@ -83,6 +83,57 @@
       line-height: 1.6;
       text-align: center;
     }
+
+    select {
+      width: 100%;
+      font-size: 16px;
+      padding: 12px 14px;
+      border-radius: 12px;
+      border: 1px solid #ccc;
+      box-sizing: border-box;
+      background: #fff;
+    }
+
+    .divider {
+      margin: 24px 0;
+      border: none;
+      border-top: 1px solid #e2e2e2;
+    }
+
+    .fetch-btn {
+      margin-top: 12px;
+      background: #6c5ce7;
+      color: #fff;
+    }
+
+    .result-box {
+      margin-top: 16px;
+      padding: 14px;
+      background: #f7f7f7;
+      border-radius: 12px;
+      font-size: 13px;
+      line-height: 1.7;
+      color: #333;
+      word-break: break-all;
+      display: none;
+    }
+
+    .result-box.show {
+      display: block;
+    }
+
+    .result-box img {
+      max-width: 100%;
+      border-radius: 8px;
+      margin-top: 8px;
+    }
+
+    .status-text {
+      margin-top: 10px;
+      font-size: 13px;
+      color: #888;
+      text-align: center;
+    }
   </style>
 </head>
 
@@ -111,6 +162,34 @@
 
     <button type="button" class="btn save" id="saveBtn">
       保存
+    </button>
+
+    <hr class="divider">
+
+    <label for="eventUrlInput">TIGETイベントURL</label>
+
+    <input id="eventUrlInput" type="text" placeholder="https://tiget.net/events/524277">
+
+    <button type="button" class="btn fetch-btn" id="fetchBtn">
+      イベント情報を取得
+    </button>
+
+    <p class="status-text" id="fetchStatus"></p>
+
+    <div id="ticketTypeArea" style="display:none; margin-top:16px;">
+      <label for="ticketTypeSelect">チケット種別</label>
+      <select id="ticketTypeSelect"></select>
+    </div>
+
+    <div class="result-box" id="resultBox">
+      <div><strong>タイトル:</strong> <span id="resultTitle"></span></div>
+      <div><strong>日時:</strong> <span id="resultDate"></span></div>
+      <div><strong>開場/開演:</strong> <span id="resultShowtime"></span></div>
+      <div id="resultImageWrap"><img id="resultImage" src="" alt=""></div>
+    </div>
+
+    <button type="button" class="btn save" id="saveEventBtn" style="margin-top:14px; display:none;">
+      この内容を保存
     </button>
 
 
@@ -162,6 +241,128 @@
       localStorage.setItem('userAddress', addressInput.value.trim());
 
       alert('保存しました');
+    });
+
+    // ==========================
+    // TIGETイベント情報の自動取得
+    // ==========================
+    const eventUrlInput = document.getElementById('eventUrlInput');
+    const fetchBtn = document.getElementById('fetchBtn');
+    const fetchStatus = document.getElementById('fetchStatus');
+    const ticketTypeArea = document.getElementById('ticketTypeArea');
+    const ticketTypeSelect = document.getElementById('ticketTypeSelect');
+    const resultBox = document.getElementById('resultBox');
+    const resultTitle = document.getElementById('resultTitle');
+    const resultDate = document.getElementById('resultDate');
+    const resultShowtime = document.getElementById('resultShowtime');
+    const resultImage = document.getElementById('resultImage');
+    const saveEventBtn = document.getElementById('saveEventBtn');
+
+    let fetchedEventData = null;
+
+    // <br>より前のテキストだけを取り出す(ネストしたdivや価格部分を除外)
+    function extractLeadingText(el) {
+      let text = '';
+      for (const node of el.childNodes) {
+        if (node.nodeName && node.nodeName.toLowerCase() === 'br') break;
+        text += node.textContent || '';
+      }
+      return text.trim();
+    }
+
+    fetchBtn.addEventListener('click', async function () {
+      const url = eventUrlInput.value.trim();
+      if (!url) {
+        fetchStatus.textContent = 'URLを入力してください';
+        return;
+      }
+
+      fetchStatus.textContent = '取得中…';
+      resultBox.classList.remove('show');
+      ticketTypeArea.style.display = 'none';
+      saveEventBtn.style.display = 'none';
+
+      try {
+        const proxyUrl = 'https://api.allorigins.win/raw?url=' + encodeURIComponent(url);
+        const response = await fetch(proxyUrl);
+
+        if (!response.ok) {
+          throw new Error('ネットワークエラー: ' + response.status);
+        }
+
+        const html = await response.text();
+        const doc = new DOMParser().parseFromString(html, 'text/html');
+
+        const titleEl = doc.querySelector('.pg-event__header__title');
+        const title = titleEl ? titleEl.textContent.trim() : '(タイトル取得失敗)';
+
+        const dateEl = doc.querySelector('.pg-event__ordering__program__datetime');
+        const date = dateEl ? dateEl.textContent.trim() : '(日時取得失敗)';
+
+        const detailTitleEls = doc.querySelectorAll('.pg-event__detail__title');
+        let showtime = '(開場/開演 取得失敗)';
+        detailTitleEls.forEach(function (el) {
+          const t = el.textContent.trim();
+          if (t.includes('開場') || t.includes('開演')) {
+            showtime = t;
+          }
+        });
+
+        const imgEl = doc.querySelector('.pg-event__event_image__figure img');
+        const imageUrl = imgEl
+          ? (imgEl.getAttribute('data-src') || imgEl.getAttribute('src') || '')
+          : '';
+
+        const ticketNameEls = doc.querySelectorAll('.c-ordering-btn__content__name');
+        const ticketNames = Array.from(ticketNameEls)
+          .map(extractLeadingText)
+          .filter(function (t, idx, arr) {
+            return t && arr.indexOf(t) === idx; // 重複除去
+          });
+
+        fetchedEventData = { title: title, date: date, showtime: showtime, imageUrl: imageUrl };
+
+        // チケット種別のプルダウンを組み立て
+        ticketTypeSelect.innerHTML = '';
+        if (ticketNames.length > 0) {
+          ticketNames.forEach(function (name) {
+            const opt = document.createElement('option');
+            opt.value = name;
+            opt.textContent = name;
+            ticketTypeSelect.appendChild(opt);
+          });
+          ticketTypeArea.style.display = 'block';
+        }
+
+        resultTitle.textContent = title;
+        resultDate.textContent = date;
+        resultShowtime.textContent = showtime;
+        if (imageUrl) {
+          resultImage.src = imageUrl;
+          resultImage.style.display = 'block';
+        } else {
+          resultImage.style.display = 'none';
+        }
+
+        resultBox.classList.add('show');
+        saveEventBtn.style.display = 'block';
+        fetchStatus.textContent = '取得しました';
+      } catch (err) {
+        console.error(err);
+        fetchStatus.textContent = '取得に失敗しました(プロキシが混雑している可能性があります。少し待って再試行してください)';
+      }
+    });
+
+    saveEventBtn.addEventListener('click', function () {
+      if (!fetchedEventData) return;
+
+      localStorage.setItem('eventTitle', fetchedEventData.title);
+      localStorage.setItem('eventDate', fetchedEventData.date);
+      localStorage.setItem('eventShowtime', fetchedEventData.showtime);
+      localStorage.setItem('eventImage', fetchedEventData.imageUrl);
+      localStorage.setItem('eventTicketType', ticketTypeSelect.value || '');
+
+      alert('イベント情報を保存しました');
     });
   </script>
 
