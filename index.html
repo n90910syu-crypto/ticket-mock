@@ -182,8 +182,10 @@
     <input id="eventTitleInput" type="text" placeholder="自動取得 or 手入力">
 
     <label for="eventTicketTypeInput" style="margin-top:16px;">チケット種別</label>
-    <input id="eventTicketTypeInput" list="ticketTypeOptions" type="text" placeholder="自動取得 or 手入力(候補があれば選択可)">
-    <datalist id="ticketTypeOptions"></datalist>
+    <select id="ticketTypeSelect" style="display:none; margin-bottom:8px;">
+      <option value="">-- 候補から選ぶ --</option>
+    </select>
+    <input id="eventTicketTypeInput" type="text" placeholder="自動取得 or 手入力">
 
     <label for="eventDateInput" style="margin-top:16px;">日時</label>
     <input id="eventDateInput" type="text" placeholder="自動取得 or 手入力">
@@ -266,7 +268,7 @@
     const fetchStatus = document.getElementById('fetchStatus');
     const eventTitleInput = document.getElementById('eventTitleInput');
     const eventTicketTypeInput = document.getElementById('eventTicketTypeInput');
-    const ticketTypeOptions = document.getElementById('ticketTypeOptions');
+    const ticketTypeSelect = document.getElementById('ticketTypeSelect');
     const eventDateInput = document.getElementById('eventDateInput');
     const eventShowtimeInput = document.getElementById('eventShowtimeInput');
     const eventImageInput = document.getElementById('eventImageInput');
@@ -297,6 +299,13 @@
 
     eventImageInput.addEventListener('input', updateImagePreview);
     updateImagePreview();
+
+    ticketTypeSelect.addEventListener('change', function () {
+      if (ticketTypeSelect.value) {
+        eventTicketTypeInput.value = ticketTypeSelect.value;
+        goLink.classList.add('disabled');
+      }
+    });
 
     fetchBtn.addEventListener('click', async function () {
       const url = eventUrlInput.value.trim();
@@ -398,17 +407,24 @@
             return t && arr.indexOf(t) === idx; // 重複除去
           });
 
-        ticketTypeOptions.innerHTML = '';
+        ticketTypeSelect.innerHTML = '<option value="">-- 候補から選ぶ --</option>';
         ticketNames.forEach(function (name) {
           const opt = document.createElement('option');
           opt.value = name;
-          ticketTypeOptions.appendChild(opt);
+          opt.textContent = name;
+          ticketTypeSelect.appendChild(opt);
         });
+
+        if (ticketNames.length > 0) {
+          ticketTypeSelect.style.display = 'block';
+        }
+
         if (ticketNames.length === 1) {
           eventTicketTypeInput.value = ticketNames[0];
+          ticketTypeSelect.value = ticketNames[0];
           gotCount++;
         } else if (ticketNames.length > 1 && !eventTicketTypeInput.value) {
-          fetchStatus.textContent = 'チケット種別が複数見つかりました。候補から選択するか入力してください。';
+          fetchStatus.textContent = 'チケット種別が複数見つかりました。プルダウンから選択するか入力してください。';
         }
       }
 
