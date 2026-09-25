@@ -1,0 +1,2359 @@
+<!DOCTYPE html>
+<html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+
+<meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport">
+<title>TIGET My Page Mock</title>
+<style>
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      width: 100%;
+      min-height: 100%;
+      background: #ffffff;
+      color: #333333;
+      font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Arial, sans-serif;
+      overflow-x: hidden;
+    }
+
+    body {
+      -webkit-text-size-adjust: 100%;
+    }
+
+    .page {
+      width: 100%;
+      min-height: 100svh;
+      background: #ffffff;
+    }
+
+    /* =========================
+      共通：画像差し込み用
+      後でこの中に img を入れてください
+    ========================= */
+
+    .image-slot {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #ffffff;
+    }
+
+    .image-slot img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* =========================
+      ヘッダー
+    ========================= */
+
+    .site-header {
+      width: 100%;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      padding: 0 10px;
+      background: #ffffff;
+      border-bottom: 1px solid #eeeeee;
+    }
+
+    .site-logo {
+      font-size: 15px;
+      font-weight: 800;
+      letter-spacing: 1.5px;
+      color: #222222;
+      line-height: 1;
+    }
+
+    .site-logo span {
+      color: #2f9c95;
+    }
+
+    .header-nav {
+      margin-left: auto;
+      display: flex;
+      align-items: center;
+      gap: 9px;
+      font-size: 9px;
+      font-weight: 700;
+      color: #333333;
+      white-space: nowrap;
+    }
+
+    .header-icon {
+      font-size: 13px;
+      line-height: 1;
+      color: #333333;
+    }
+
+    .login-message {
+      width: 100%;
+      height: 42px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #dff4e8;
+      color: #2d9b87;
+      font-size: 10px;
+      font-weight: 600;
+    }
+
+    /* =========================
+      プロフィール
+    ========================= */
+
+    .profile-area {
+      padding: 35px 16px 22px;
+      text-align: center;
+      background: #ffffff;
+      border-bottom: 1px solid #dddddd;
+    }
+
+    .avatar {
+      width: 68px;
+      height: 68px;
+      margin: 0 auto 12px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: #f6f6f6;
+    }
+
+    .user-name {
+      margin: 0;
+      font-size: 13px;
+      font-weight: 700;
+      color: #333333;
+    }
+
+    /* =========================
+      チケット枚数・設定ボタン
+    ========================= */
+
+    .ticket-summary {
+      padding: 19px 10px 18px;
+      background: #ffffff;
+    }
+
+    .ticket-summary-title {
+      display: flex;
+      justify-content: center;
+      align-items: baseline;
+      gap: 8px;
+      margin: 0 0 20px;
+      font-size: 14px;
+      font-weight: 700;
+      color: #333333;
+    }
+
+    .ticket-summary-title .count {
+      color: #2c9f9b;
+      font-size: 16px;
+      font-weight: 800;
+    }
+
+    .action-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 9px;
+      padding: 0 2px;
+    }
+
+    .action-button {
+      height: 34px;
+      border: 1px solid #d7d7d7;
+      background: #ffffff;
+      color: #333333;
+      font-size: 10px;
+      font-weight: 700;
+      border-radius: 2px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .action-button.small-left {
+      grid-column: 1 / 2;
+    }
+
+    /* =========================
+      広告エリア
+    ========================= */
+
+    .ad-area {
+      padding: 18px 10px 20px;
+      background: #f1f3f7;
+    }
+
+    .ad-banner {
+      width: 100%;
+      background: #ffffff;
+      overflow: hidden;
+    }
+
+    .ad-banner.main {
+      height: 112px;
+      margin-bottom: 17px;
+    }
+
+    .ad-banner.sub {
+      height: 92px;
+    }
+
+    /* =========================
+      チケット一覧
+    ========================= */
+
+    .section-heading {
+      width: 100%;
+      height: 33px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #eef1f5;
+      color: #333333;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .ticket-list {
+      background: #ffffff;
+    }
+
+    .ticket-button-wrap {
+      padding: 10px 10px 8px;
+      background: #ffffff;
+    }
+
+    .ticket-display-button {
+      width: 100%;
+      height: 36px;
+      border: 0;
+      border-radius: 2px;
+      background: #3b9992;
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .ticket-card {
+      padding: 12px 10px 20px;
+      background: #ffffff;
+      border-bottom: 1px solid #eeeeee;
+    }
+
+
+
+.ticket-muted-bar {
+  width: 100%;
+  height: 36px;
+  margin: 0 0 12px;
+  border-radius: 2px;
+  background: #b7b7b7;
+  color: #ffffff;
+  font-size: 12px;
+  font-weight: 800;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+    .ticket-event-title {
+      margin: 0 0 5px;
+      font-size: 11px;
+      line-height: 1.45;
+      font-weight: 700;
+      color: #497f8c;
+    }
+
+    .ticket-date {
+      margin: 0 0 13px;
+      font-size: 13px;
+      line-height: 1.35;
+      font-weight: 800;
+      color: #333333;
+    }
+
+    .ticket-table {
+      width: 100%;
+      display: grid;
+      grid-template-columns: 74px 1fr;
+      row-gap: 8px;
+      font-size: 11px;
+      line-height: 1.25;
+      color: #333333;
+    }
+
+    .ticket-label {
+      font-weight: 700;
+      color: #333333;
+    }
+
+    .ticket-value {
+      font-weight: 700;
+      color: #333333;
+    }
+
+    .ticket-help {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 13px;
+      height: 13px;
+      margin-left: 3px;
+      border-radius: 50%;
+      background: #2e9c98;
+      color: #ffffff;
+      font-size: 9px;
+      font-weight: 800;
+      vertical-align: 1px;
+    }
+
+    .ticket-note {
+      margin: 18px 0 0;
+      color: #555555;
+      font-size: 9px;
+      line-height: 1.6;
+    }
+
+    .text-link-center {
+      padding: 12px 10px;
+      text-align: center;
+      font-size: 10px;
+      line-height: 1.6;
+      color: #2f9c95;
+      font-weight: 700;
+      background: #ffffff;
+    }
+
+    .thin-section-title {
+      height: 31px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: #f0f2f7;
+      color: #333333;
+      font-size: 11px;
+      font-weight: 800;
+      border-top: 1px solid #eeeeee;
+    }
+
+    .empty-text {
+      margin: 0;
+      padding: 11px 10px 13px;
+      text-align: left;
+      color: #333333;
+      font-size: 10px;
+      line-height: 1.5;
+      background: #ffffff;
+    }
+
+    /* =========================
+      注目イベント
+    ========================= */
+
+    .pickup-area {
+      padding: 0 10px 28px;
+      background: #ffffff;
+    }
+
+    .pickup-border {
+      height: 4px;
+      background: #39958f;
+      margin: 0 0 11px;
+    }
+
+    .pickup-title {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      margin: 0 0 12px;
+      font-size: 17px;
+      font-weight: 800;
+      color: #333333;
+    }
+
+    .pickup-title .star {
+      color: #f3c400;
+      font-size: 18px;
+    }
+
+    .event-list {
+      display: flex;
+      flex-direction: column;
+      gap: 9px;
+    }
+
+    .event-item {
+      display: flex;
+      gap: 9px;
+      min-height: 74px;
+      background: #ffffff;
+    }
+
+    .event-thumb {
+      flex: 0 0 64px;
+      width: 64px;
+      height: 64px;
+      background: #ffffff;
+    }
+
+    .event-info {
+      flex: 1;
+      min-width: 0;
+      padding-top: 1px;
+    }
+
+    .event-title {
+      margin: 0 0 4px;
+      color: #333333;
+      font-size: 10px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .event-date,
+    .event-place {
+      margin: 0;
+      color: #555555;
+      font-size: 9px;
+      line-height: 1.45;
+      font-weight: 600;
+    }
+
+    .event-tags {
+      margin-top: 4px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+    }
+
+    .tag {
+      display: inline-flex;
+      align-items: center;
+      height: 14px;
+      padding: 0 5px;
+      border-radius: 1px;
+      font-size: 8px;
+      line-height: 1;
+      font-weight: 800;
+      color: #ffffff;
+      background: #e5322f;
+    }
+
+    .tag.gray {
+      background: #888888;
+    }
+
+    .more-button {
+      width: 100%;
+      height: 40px;
+      margin-top: 17px;
+      border: 0;
+      background: #ecf3ed;
+      color: #2f9c95;
+      font-size: 11px;
+      font-weight: 800;
+      position: relative;
+    }
+
+    .more-button::after {
+      content: "⌄";
+      position: absolute;
+      right: 17px;
+      top: 50%;
+      transform: translateY(-54%);
+      color: #5d9f99;
+      font-size: 17px;
+      font-weight: 400;
+    }
+
+    /* =========================
+      下部CTA
+    ========================= */
+
+    .bottom-cta {
+      padding: 43px 30px 42px;
+      background: #32938f;
+      color: #ffffff;
+      text-align: center;
+    }
+
+    .bottom-cta-text {
+      margin: 0 0 26px;
+      font-size: 15px;
+      line-height: 1.75;
+      font-weight: 800;
+    }
+
+    .cta-button {
+      width: 100%;
+      height: 43px;
+      border: 0;
+      border-radius: 999px;
+      font-size: 12px;
+      font-weight: 800;
+      display: block;
+    }
+
+    .cta-button.orange {
+      margin-bottom: 14px;
+      background: #ffb900;
+      color: #ffffff;
+    }
+
+    .cta-button.white {
+      background: #ffffff;
+      color: #32938f;
+    }
+
+    /* =========================
+      フッター
+    ========================= */
+
+    .footer {
+      padding: 28px 18px 29px;
+      background: #eef5f4;
+      color: #778080;
+    }
+
+    .footer-links {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      column-gap: 22px;
+      row-gap: 9px;
+      margin-bottom: 27px;
+    }
+
+    .footer-links a {
+      color: #778080;
+      text-decoration: none;
+      font-size: 9px;
+      font-weight: 700;
+      line-height: 1.6;
+    }
+
+    .footer-logo-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .footer-logo {
+      font-size: 24px;
+      letter-spacing: 1.6px;
+      font-weight: 800;
+      color: #9aa0a0;
+    }
+
+    .sns-icons {
+      display: flex;
+      gap: 9px;
+    }
+
+    .sns-icon {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: #a9adad;
+      color: #eef5f4;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .copyright {
+      margin: 0;
+      color: #8b9494;
+      font-size: 8px;
+      line-height: 1.55;
+      font-weight: 600;
+    }
+
+
+
+/* =========================
+  チケット表示モーダル
+========================= */
+
+body.ticket-modal-open {
+  overflow: hidden;
+}
+
+.ticket-modal-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.86);
+  opacity: 0;
+  pointer-events: none;
+  overflow-y: auto;
+  transition: opacity 0.2s ease;
+}
+
+.ticket-modal-overlay.is-open {
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.ticket-modal-wrap {
+  position: relative;
+  width: 100%;
+  min-height: 100svh;
+  padding: 20px 20px 28px;
+}
+
+.ticket-modal-poster {
+  position: relative;
+  width: 100%;
+  height: 182px;
+  overflow: hidden;
+  background: #111111;
+}
+
+.ticket-modal-poster .image-slot {
+  background: #111111;
+}
+
+.ticket-modal-poster img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 閉じるボタン */
+.ticket-modal-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 5;
+  width: 24px;
+  height: 24px;
+  border: 1px solid #dcdcdc;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.95);
+  color: #9a9a9a;
+  font-size: 17px;
+  font-weight: 200;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 2px;
+}
+
+
+
+.ticket-clock::before {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+}
+
+.ticket-clock::after {
+  content: "";
+  position: absolute;
+  inset: 4px;
+  border-radius: 50%;
+  border: 4px solid transparent;
+  border-top-color: rgba(255, 255, 255, 0.22);
+  border-right-color: rgba(255, 255, 255, 0.22);
+  transform: rotate(-30deg);
+}
+
+/* 白いチケット本体 */
+.ticket-sheet {
+  position: relative;
+  z-index: 3;
+  margin-top: -10px;
+  width: 100%;
+
+  /* ここを変更で最小最大の変更ができる */
+  min-height: clamp(385px, calc(100svh - 220px), 620px);
+
+  padding: 20px 20px 78px;
+  background: #ffffff;
+  border-radius: 18px 18px 16px 16px;
+}
+
+.ticket-entry-button {
+  width: 100%;
+  height: 50px;
+  border: 0;
+  border-radius: 5px;
+  background: #2d98c8;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.ticket-main-info {
+  padding-top: 15px;
+  color: #000000;
+}
+
+.ticket-event-name {
+  margin: 0 0 5px;
+  font-size: 16px;
+  line-height: 1.2;
+  font-weight: 800;
+  letter-spacing: -0.3px;
+}
+
+.ticket-type-row {
+  display: flex;
+  align-items: center;
+  gap: 22px;
+  margin-bottom: 5px;
+  font-size: 15px;
+  line-height: 1.25;
+  font-weight: 500;
+}
+
+.ticket-seat {
+  margin: 0 0 12px;
+  font-size: 23px;
+  line-height: 1.15;
+  font-weight: 900;
+  letter-spacing: 1px;
+}
+
+.ticket-divider {
+  height: 1px;
+  background: #c7c7c7;
+  margin-bottom: 9px;
+}
+
+.ticket-organizer {
+  margin: 0 0 7px;
+  text-align: right;
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 500;
+}
+
+.ticket-date-main {
+  margin: 0 0 3px;
+  font-size: 16px;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+.ticket-open-time {
+  margin: 0 0 2px;
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+.ticket-venue {
+  margin: 0;
+  color: #5f73a5;
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+.ticket-pin {
+  color: #8c8c8c;
+  font-size: 19px;
+  vertical-align: -2px;
+}
+
+/* 下部丸アイコン */
+.ticket-bottom-icons {
+  position: absolute;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ticket-round-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 50%;
+  background: #ffffff;
+  box-shadow: 0 2px 9px rgba(0, 0, 0, 0.32);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #81959a;
+  font-size: 22px;
+  font-weight: 300;
+}
+
+.ticket-round-icon svg {
+  width: 25px;
+  height: 25px;
+  stroke: #81959a;
+}
+
+
+/* 時計本体 */
+.ticket-clock {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  z-index: 4;
+  width: 68px;
+  height: 68px;
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.73);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: visible;
+}
+
+/* 時刻テキスト */
+.ticket-clock-time {
+  position: relative;
+  z-index: 2;
+  color: #ffffff;
+  font-size: 17px;
+  font-weight: 400;
+  letter-spacing: -0.3px;
+  line-height: 1;
+}
+
+
+/* リング全体 */
+.ticket-clock-ring {
+  position: absolute;
+  inset: -3px;
+  width: calc(100% + 6px);
+  height: calc(100% + 6px);
+  transform: rotate(-90deg);
+  overflow: visible;
+}
+
+/* 外周のグレーリング */
+.ticket-clock-track {
+  fill: none;
+  stroke: #7a7a7a;
+  stroke-width: 5;
+}
+
+/* 1/4周の白いバー */
+.ticket-clock-bar {
+  fill: none;
+  stroke: #ffffff;
+  stroke-width: 5;
+  stroke-linecap: round;
+
+  /* 円周 ≒ 289（r=46）なので、その1/4 ≒ 72.25 */
+  stroke-dasharray: 72.25 289;
+  stroke-dashoffset: 0;
+
+  transform-origin: 50% 50%;
+  animation: ticketClockSpin 2s linear infinite;
+}
+
+@keyframes ticketClockSpin {
+  from {
+    transform: rotate(0deg);
+  }
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+/* =========================
+  入場受付 確認ダイアログ
+========================= */
+
+.entry-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 25;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 10px;
+  background: rgba(0, 0, 0, 0.92);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.22s ease, visibility 0.22s ease;
+}
+
+.entry-confirm-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* ダイアログ本体 */
+.entry-confirm-box {
+  position: relative;
+  width: calc(100vw - 20px);
+  max-width: none;
+  padding: 47px 34px 30px;
+  background: #ffffff;
+  border-radius: 5px;
+  text-align: center;
+  color: #222222;
+
+  opacity: 0;
+  transform: translateY(24px) scale(0.96);
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s cubic-bezier(0.2, 0.9, 0.2, 1);
+}
+
+.entry-confirm-overlay.is-open .entry-confirm-box {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+/* 確認ダイアログ／入場済みダイアログ右上の× */
+.entry-confirm-close {
+  position: absolute;
+  top: -15px;
+  right: -4px;
+  z-index: 2;
+  width: 27px;
+  height: 27px;
+  border: 1px solid #dcdcdc;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.96);
+  color: #999999;
+  font-size: 19px;
+  font-weight: 200;
+  line-height: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding-bottom: 2px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.22);
+}
+
+.entry-confirm-title {
+  margin: 0 0 42px;
+  color: #2f94ad;
+  font-size: 22px;
+  line-height: 1.4;
+  font-weight: 800;
+}
+
+
+.entry-confirm-text {
+  margin: 0 0 40px;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 400;
+  color: #222222;
+}
+
+/* ボタンは位置そのまま、横幅だけ短く */
+.entry-confirm-complete {
+  width: 72%;
+  height: 88px;
+  margin: auto auto 10px;
+  border: 0;
+  border-radius: 5px;
+  background: #2f9acb;
+  color: #ffffff;
+  font-size: 16px;
+  font-weight: 400;
+  display: block;
+}
+
+.entry-confirm-cancel {
+  width: 72%;
+  height: 48px;
+  margin: 0 auto;
+  border: 1px solid #777777;
+  border-radius: 5px;
+  background: #ffffff;
+  color: #777777;
+  font-size: 17px;
+  font-weight: 400;
+  display: block;
+}
+
+
+/* =========================
+  受付完了後ロード画面
+========================= */
+
+body.entry-loading-open {
+  overflow: hidden;
+}
+
+.entry-loading-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 最初の画面を若干暗くする */
+  background: rgba(0, 0, 0, 0.62);
+
+  opacity: 0;
+  visibility: hidden;
+  pointer-events: none;
+  transition: opacity 0.18s ease, visibility 0.18s ease;
+}
+
+.entry-loading-overlay.is-open {
+  opacity: 1;
+  visibility: visible;
+  pointer-events: auto;
+}
+
+/* 円形ロード */
+.entry-loading-spinner {
+  width: 52px;
+  height: 52px;
+  border-radius: 50%;
+
+  background: conic-gradient(
+    #43b8b2 0deg 90deg,
+    rgba(255, 255, 255, 0.82) 90deg 360deg
+  );
+
+  -webkit-mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 6px),
+    #000 calc(100% - 6px)
+  );
+  mask: radial-gradient(
+    farthest-side,
+    transparent calc(100% - 6px),
+    #000 calc(100% - 6px)
+  );
+
+  animation: entryLoadingSpin 0.8s linear infinite;
+}
+
+@keyframes entryLoadingSpin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+
+
+/* =========================
+  入場済み状態
+========================= */
+
+.ticket-entry-button.is-entered {
+  background: #e5265c;
+  color: #ffffff;
+  font-size: 18px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+}
+
+.ticket-entry-button.is-entered::before {
+  content: "✓";
+  width: 24px;
+  height: 24px;
+  border: 2px solid #ffffff;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 17px;
+  line-height: 1;
+}
+
+/* ロード後にチケット画面が下から出てくる演出 */
+.ticket-modal-overlay.is-slide-up .ticket-modal-wrap {
+  animation: ticketModalSlideUp 0.42s cubic-bezier(0.18, 0.9, 0.22, 1) both;
+}
+
+@keyframes ticketModalSlideUp {
+  from {
+    opacity: 0;
+    transform: translateY(85px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+
+
+/* =========================
+  入場済み専用ダイアログ
+========================= */
+
+.entered-notice-box {
+  width: calc(100vw - 20px);
+  max-width: none;
+  padding: 45px 24px 34px;
+  border-radius: 5px;
+}
+
+.entered-notice-title {
+  margin: 0 0 36px;
+  color: #d84673;
+  font-size: 18px;
+  line-height: 1.45;
+  font-weight: 800;
+  text-align: center;
+}
+
+.entered-notice-text {
+  margin: 0 0 48px;
+  color: #222222;
+  font-size: 14px;
+  line-height: 1.75;
+  font-weight: 500;
+  text-align: center;
+}
+
+.entered-notice-button {
+  width: auto;
+  min-width: 80px;
+  height: 36px;
+  margin: 0 auto;
+  padding: 0 18px;
+  border: 0;
+  background: transparent;
+  color: #888888;
+  font-size: 15px;
+  font-weight: 400;
+  display: block;
+}
+
+
+
+/* =========================
+  確認ダイアログ／入場済みダイアログ
+  表示位置・高さ調整
+========================= */
+
+/* 画面上から 1/10 あけて表示 */
+.entry-confirm-overlay {
+  align-items: flex-start;
+  padding: 10svh 10px 0;
+}
+
+/* ダイアログ本体：横幅は現状維持、縦幅は画面の半分より少し小さめ */
+.entry-confirm-box,
+.entered-notice-box {
+  width: calc(100vw - 20px);
+  max-width: none;
+
+  /* 画面高さの約46% */
+  height: 46svh;
+
+  /* 小さい端末・大きい端末で崩れにくくする保険 */
+  min-height: 340px;
+  max-height: 420px;
+
+  display: flex;
+  flex-direction: column;
+  padding: 38px 34px 28px;
+}
+
+/* 通常確認ダイアログのボタンを下寄せ */
+.entry-confirm-complete {
+  margin: auto auto 10px;
+}
+
+.entry-confirm-cancel {
+  margin: 0 auto;
+}
+
+/* 入場済みダイアログの「閉じる」を下寄せ */
+.entered-notice-button {
+  margin-top: auto;
+}
+
+
+/* 入場済みダイアログ：本文と閉じるボタンの間隔調整 */
+.entered-notice-text {
+  margin-bottom: 1.5em;
+}
+
+.entered-notice-button {
+  margin-top: 0;
+}
+
+
+
+/* =========================
+  白カード4枚スライダー / 下部アイコン固定
+========================= */
+
+/* SVGリング使用時は、以前の疑似要素リングを無効化 */
+.ticket-clock::before,
+.ticket-clock::after {
+  content: none;
+  display: none;
+}
+
+/* 白いチケットカード全体の固定フレーム */
+.ticket-sheet {
+  position: relative;
+  z-index: 3;
+  margin-top: -10px;
+  width: 100%;
+  height: clamp(385px, calc(100svh - 220px), 620px);
+  min-height: 0;
+  padding: 0;
+  background: #ffffff;
+  border-radius: 18px 18px 16px 16px;
+  overflow: hidden;
+}
+
+/* 横スワイプ領域：中身だけが動く */
+.ticket-slider {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+.ticket-slider::-webkit-scrollbar {
+  display: none;
+}
+
+.ticket-slide {
+  flex: 0 0 100%;
+  width: 100%;
+  height: 100%;
+  padding: 20px 20px 84px;
+  overflow-y: auto;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+  background: #ffffff;
+}
+
+/* 下部4アイコンはスライド外に置いて固定 */
+.ticket-bottom-icons {
+  position: absolute;
+  z-index: 6;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.ticket-round-icon {
+  appearance: none;
+  border: 0;
+  padding: 0;
+  color: #81959a;
+  cursor: pointer;
+  -webkit-tap-highlight-color: transparent;
+}
+
+.ticket-round-icon svg {
+  width: 25px;
+  height: 25px;
+  stroke: currentColor;
+}
+
+.ticket-round-icon.is-active {
+  color: #2f9fc0;
+}
+
+/* 2枚目：事前アンケート */
+.survey-title {
+  height: 46px;
+  margin: 16px 0 25px;
+  border-radius: 5px;
+  background: #f6f6f6;
+  color: #222222;
+  font-size: 12px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.survey-row {
+  margin-bottom: 22px;
+  color: #222222;
+}
+
+.survey-label {
+  margin: 0 0 5px;
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+.survey-value {
+  margin: 0;
+  font-size: 15px;
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+.survey-value.is-bold {
+  font-weight: 700;
+}
+
+/* 3・4枚目：案内表示 */
+.ticket-guide-message {
+  margin: 33px 0 0;
+  color: #111111;
+  text-align: center;
+  font-size: 14px;
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+.resale-action-button {
+  width: 67%;
+  height: 50px;
+  margin: 35px auto 33px;
+  border: 1px solid #91cddd;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #91cddd;
+  font-size: 16px;
+  font-weight: 400;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 27px;
+}
+
+.resale-action-arrow {
+  font-size: 25px;
+  line-height: 1;
+}
+
+.resale-caution {
+  margin: 0;
+  color: #989898;
+  font-size: 13px;
+  line-height: 1.65;
+  font-weight: 400;
+}
+
+.redistribute-slide .ticket-guide-message {
+  margin-top: 33px;
+}
+
+
+  
+/* =========================
+  独立カード型4枚スライダー：上書き設定
+  1枚ずつ画面幅で固定し、スワイプ中だけカード間の隙間を見せる
+========================= */
+
+/* スライダーが表示される領域。画像・時計・×はこの外なので固定のまま */
+.ticket-card-stage {
+  position: relative;
+  z-index: 3;
+  width: 100%;
+  height: clamp(385px, calc(100svh - 220px), 620px);
+  min-height: 0;
+  margin-top: -10px;
+  border-radius: 18px 18px 16px 16px;
+  overflow: hidden;
+}
+
+/* 4枚の独立カードを横並び：スワイプ中に隙間が見える */
+.ticket-card-stage .ticket-slider {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  gap: 12px; /* カード間の隙間。広げるならこの値を変更 */
+  padding: 0;
+  margin: 0;
+  background: transparent;
+  overflow-x: auto;
+  overflow-y: hidden;
+  scroll-snap-type: x mandatory;
+  scroll-padding: 0;
+  scroll-behavior: smooth;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none;
+  overscroll-behavior-x: contain;
+}
+
+/* 1画面につき必ず1枚。中間位置で止まりにくくする */
+.ticket-card-stage .ticket-slide {
+  flex: 0 0 100%;
+  min-width: 100%;
+  width: 100%;
+  height: 100%;
+  padding: 0;
+  margin: 0;
+  overflow: hidden;
+  background: transparent;
+  scroll-snap-align: start;
+  scroll-snap-stop: always;
+}
+
+/* 各スライド自身が独立した白いカード */
+.ticket-card-stage .ticket-sheet {
+  position: relative;
+  z-index: 1;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  margin: 0;
+  padding: 20px 20px 84px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  background: #ffffff;
+  border-radius: 18px 18px 16px 16px;
+}
+
+/* 丸アイコンはカードの移動領域外で固定 */
+.ticket-card-stage .ticket-bottom-icons {
+  position: absolute;
+  z-index: 20;
+  left: 50%;
+  bottom: 22px;
+  transform: translateX(-50%);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+/* =========================
+  添付画像参照：チケット一覧表示の見た目調整
+  分配済みカード～下部セクションを実機表示のサイズ感に寄せる
+========================= */
+
+.ticket-card {
+  padding: 17px 10px 28px;
+  border-bottom: 1px solid #dddddd;
+}
+
+.ticket-card {
+  padding-top: 0;
+}
+
+.ticket-muted-bar {
+  height: 43px;
+  margin: 0 0 23px;
+  border-radius: 4px;
+  background: #a8a8a8;
+  color: #ffffff;
+  font-size: 15px;
+  font-weight: 400;
+}
+
+.ticket-event-title {
+  margin: 0 0 4px;
+  color: #76a4b7;
+  font-size: 15px;
+  line-height: 1.45;
+  font-weight: 400;
+  letter-spacing: 0;
+}
+
+.ticket-date {
+  margin: 0 0 20px;
+  color: #111111;
+  font-size: 16px;
+  line-height: 1.45;
+  font-weight: 400;
+}
+
+.ticket-table {
+  grid-template-columns: 104px 1fr;
+  row-gap: 17px;
+  font-size: 15px;
+  line-height: 1.45;
+  color: #222222;
+}
+
+.ticket-label {
+  color: #666666;
+  font-weight: 400;
+}
+
+.ticket-value {
+  color: #111111;
+  font-weight: 400;
+}
+
+/* 画像内の青い「31 +」カレンダー表示 */
+.ticket-calendar-icon {
+  position: relative;
+  width: 31px;
+  height: 29px;
+  margin: 1px 0 12px 3px;
+  border-radius: 2px;
+  background: #218bc6;
+  color: #ffffff;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  padding-bottom: 2px;
+  font-size: 16px;
+  line-height: 1;
+  font-weight: 400;
+}
+
+.ticket-calendar-icon::before {
+  content: "";
+  position: absolute;
+  top: -3px;
+  left: 3px;
+  right: 3px;
+  height: 5px;
+  border-radius: 2px 2px 0 0;
+  background: #78a2c5;
+}
+
+.ticket-calendar-icon b {
+  position: absolute;
+  top: -5px;
+  right: -8px;
+  width: 13px;
+  height: 13px;
+  border-radius: 50%;
+  background: #80bd2e;
+  color: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  line-height: 1;
+  font-weight: 700;
+}
+
+.ticket-help {
+  width: 16px;
+  height: 16px;
+  margin-left: 0;
+  background: #6aa3d0;
+  color: #ffffff;
+  font-size: 12px;
+  font-family: Georgia, serif;
+  font-weight: 700;
+  vertical-align: -1px;
+}
+
+.ticket-note {
+  margin: 25px 0 0;
+  padding-top: 14px;
+  border-top: 1px solid #dddddd;
+  color: #666666;
+  font-size: 12px;
+  line-height: 1.75;
+  font-weight: 400;
+}
+
+.text-link-center {
+  padding: 17px 10px 22px;
+  color: #75a9bb;
+  font-size: 15px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+.thin-section-title {
+  height: 43px;
+  border-top: 0;
+  background: #f6f5fa;
+  color: #46536d;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+.empty-text {
+  padding: 7px 0 13px;
+  color: #333333;
+  font-size: 14px;
+  line-height: 1.5;
+  font-weight: 400;
+}
+
+
+
+/*チケット：ラベルの「：」直後に値を表示 */
+.ticket-card .ticket-table {
+  display: block;
+  font-size: 15px;
+  line-height: 1.45;
+}
+
+.ticket-card .ticket-label,
+.ticket-card .ticket-value {
+  display: inline;
+}
+
+/* 各項目の値の後で改行し、次の行との間隔を作る */
+.ticket-card .ticket-value::after {
+  content: "";
+  display: block;
+  margin-bottom: 8px;
+}
+
+/* カレンダーアイコン表示 */
+.ticket-card .ticket-calendar-icon {
+  display: flex;
+}
+
+.ticket-card .ticket-calendar-icon + .ticket-value::after {
+  margin-bottom: 12px;
+}
+
+
+/* 会場名横のポインター*/
+.ticket-venue {
+  margin: 0;
+  color: #5f73a5;
+  font-size: 15px;
+  line-height: 1.35;
+  font-weight: 400;
+}
+
+.ticket-pin {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  margin-left: 2px;
+  vertical-align: -3px;
+}
+
+.ticket-pin-icon {
+  width: 16px;
+  height: 20px;
+  fill: #8c8c8c;
+  display: block;
+}
+
+
+
+</style>
+</head>
+<body class="">
+<div class="page">
+<header class="site-header">
+<div class="site-logo">Ti<span>G</span>ET</div>
+<nav class="header-nav">
+<span>マイページ</span>
+<span>チケット</span>
+<span>ヘルプ</span>
+<span class="header-icon">🔍</span>
+<span class="header-icon">≡</span>
+</nav>
+</header>
+<div class="login-message">
+      ログインしました。
+    </div>
+<section class="profile-area">
+<div class="avatar">
+<div class="image-slot">
+<!-- プロフィール画像を入れる場所 -->
+</div>
+</div>
+<p class="user-name">高橋拓真</p>
+</section>
+<section class="ticket-summary">
+<p class="ticket-summary-title">
+<span>購入・予約しているチケット</span>
+<span class="count">2枚</span>
+</p>
+<div class="action-grid">
+<div class="action-button">主催者・出演者として登録</div>
+<div class="action-button">設定</div>
+<div class="action-button small-left">購入履歴の確認・管理</div>
+</div>
+</section>
+<section class="ad-area">
+<div class="ad-banner main">
+<div class="image-slot">
+<!-- バナー画像1を入れる場所 -->
+</div>
+</div>
+<div class="ad-banner sub">
+<div class="image-slot">
+<!-- バナー画像2を入れる場所 -->
+</div>
+</div>
+</section>
+<section class="ticket-list">
+<div class="section-heading">購入・予約しているチケット</div>
+<div class="ticket-button-wrap">
+<button class="ticket-display-button" type="button">チケット表示</button>
+</div>
+<article class="ticket-card">
+<p class="ticket-event-title">キャラフルアイドルフェス</p>
+<p class="ticket-date">2026年09月19日(土)</p>
+<div class="ticket-table">
+<div class="ticket-calendar-icon" aria-hidden="true"><span>31</span><b>+</b></div>
+<div class="ticket-value"></div>
+<div class="ticket-label">種別：</div>
+  <div class="ticket-value">分配</div>
+<div class="ticket-label">受付番号：</div>
+  <div class="ticket-value" id="displayReceptionNumber">前方 11</div>
+<div class="ticket-label">枚数：</div>
+  <div class="ticket-value">1枚</div>
+<div class="ticket-label">合計金額：</div>
+  <div class="ticket-value">¥0</div>
+<div class="ticket-label">取得日：</div>
+  <div class="ticket-value">2026/09/15</div>
+<div class="ticket-label">リセール：</div>
+  <div class="ticket-value">リセール不可</div>
+<div class="ticket-label">チケットの分配：</div>
+  <div class="ticket-value">分配不可</div>
+<div class="ticket-label">キャンセルについて：</div>
+<div class="ticket-value"><span class="ticket-help">i</span></div>
+</div>
+</article>
+<article class="ticket-card is-muted">
+<div class="ticket-muted-bar">分配済み</div>
+<p class="ticket-event-title">ちかっぱ祭2026</p>
+<p class="ticket-date">2026年11月23日(月祝)</p>
+<div class="ticket-table">
+<div class="ticket-calendar-icon" aria-hidden="true"><span>31</span><b>+</b></div>
+<div class="ticket-value"></div>
+<div class="ticket-label">種別：</div>
+<div class="ticket-value">購入</div>
+<div class="ticket-label">受付番号：</div>
+<div class="ticket-value">-</div>
+<div class="ticket-label">枚数：</div>
+<div class="ticket-value">0枚</div>
+<div class="ticket-label">合計金額：</div>
+<div class="ticket-value">¥34,321</div>
+<div class="ticket-label">取得日：</div>
+<div class="ticket-value">2026/09/18</div>
+<div class="ticket-label">リセール：</div>
+<div class="ticket-value">リセール不可</div>
+<div class="ticket-label">チケットの分配：</div>
+<div class="ticket-value">分配不可</div>
+<div class="ticket-label">キャンセルについて：</div>
+<div class="ticket-value"><span class="ticket-help">i</span></div>
+</div>
+<p class="ticket-note">
+          ※「チケット表示」で表示された電子チケットは時間の経過で表示が変化しています。<br>
+          実際のイベント開催に必要な表示内容を十分に確認してご来場ください。
+        </p>
+</article>
+<div class="text-link-center">
+        全てのチケットを見る（アーカイブ確認はこちら）
+      </div>
+<div class="thin-section-title">抽選結果待ちのチケット</div>
+<div class="text-link-center">
+        全ての抽選申込したチケットの確認はこちら
+      </div>
+<div class="thin-section-title">お気に入りアーティスト</div>
+<p class="empty-text">お気に入りはまだありません</p>
+<div class="thin-section-title">お気に入りイベント</div>
+<p class="empty-text">お気に入りはまだありません</p>
+<div class="thin-section-title">お気に入りユーザー</div>
+<p class="empty-text">お気に入りはまだありません</p>
+</section>
+<section class="pickup-area">
+<div class="pickup-border"></div>
+<h2 class="pickup-title">
+<span class="star">★</span>
+<span>注目イベント</span>
+</h2>
+<div class="event-list">
+
+<article class="event-item">
+<div class="event-thumb">
+  <div class="image-slot">
+    <!-- 注目イベント画像1 -->
+  </div>
+</div>
+<div class="event-info">
+<p class="event-title">TIGET presents SAKAE SP-RING 2026</p>
+<p class="event-date">2026年06月06日(土) 〜 06月07日(日)</p>
+<p class="event-place">SAKAE SP-RING事務局</p>
+<div class="event-tags">
+<span class="tag gray">受付中</span>
+</div>
+</div>
+</article>
+
+<article class="event-item">
+<div class="event-thumb">
+  <div class="image-slot">
+    <!-- 注目イベント画像2 -->
+  </div>
+</div>
+<div class="event-info">
+<p class="event-title">KICKSTART YOUR HEART !! with SAK...</p>
+<p class="event-date">2026年06月12日(金) 〜 06月13日(土)</p>
+<p class="event-place">サンデーフォークプロモーション</p>
+<div class="event-tags">
+<span class="tag">本日開催</span>
+<span class="tag gray">販売中</span>
+</div>
+</div>
+</article>
+
+<article class="event-item">
+<div class="event-thumb">
+  <div class="image-slot">
+    <!-- 注目イベント画像3 -->
+  </div>
+</div>
+<div class="event-info">
+<p class="event-title">PEACE STOCK 80’　HIROSHIMA 2026</p>
+<p class="event-date">2026年06月21日(土) 〜 06月28日(日)</p>
+<p class="event-place">HERO SONIC2026</p>
+<div class="event-tags">
+<span class="tag">受付中</span>
+<span class="tag gray">販売中</span>
+</div>
+</div>
+</article>
+
+<article class="event-item">
+<div class="event-thumb">
+  <div class="image-slot">
+    <!-- 注目イベント画像4 -->
+  </div>
+</div>
+<div class="event-info">
+<p class="event-title">【一般】第⼀⽣命presents 6 ON DANCEの⽇2026</p>
+<p class="event-date">2026年08月11日(火/祝)</p>
+<p class="event-place">TIGET</p>
+<div class="event-tags">
+<span class="tag gray">販売中</span>
+</div>
+</div>
+</article>
+
+<article class="event-item">
+<div class="event-thumb">
+<div class="image-slot">
+<!-- 注目イベント画像7 -->
+</div>
+</div>
+<div class="event-info">
+<p class="event-title">Start新アイドル＆音森ファン感謝...</p>
+<p class="event-date">2026年05月22日(金)</p>
+<p class="event-place">新宿...</p>
+<div class="event-tags">
+<span class="tag gray">販売中</span>
+</div>
+</div>
+</article>
+
+</div>
+<button class="more-button" type="button">もっと見る</button>
+</section>
+<section class="bottom-cta">
+<p class="bottom-cta-text">
+        スマホひとつで、<br>
+        誰でもかんたんにチケットの<br>
+        販売・管理が始められます。
+      </p>
+<button class="cta-button orange" type="button">無料ではじめる</button>
+<button class="cta-button white" type="button">料金・機能を見る</button>
+</section>
+<footer class="footer">
+<div class="footer-links">
+<a href="https://tiget.net/events">イベントを探す</a>
+<a href="https://tiget.net/news">お知らせ</a>
+<a href="https://tiget.net/home/events/new">イベントページを作る</a>
+<a href="https://tiget.net/about">チケットを販売したい方</a>
+<a href="https://tiget.net/how_to_use">TIGETの使い方</a>
+<a href="https://tiget.net/about/goods">グッズを販売したい方</a>
+<a href="https://tiget.net/home">マイページ</a>
+<a href="https://artists.tiget.net/logos">TIGETコミュニティログイン</a>
+<a href="https://tiget.net/user_policy">利用規約・特約</a>
+<a href="https://support.tiget.net/hc">販売事業者向け販売ガイド</a>
+<a href="https://tiget.net/sctl">特定商取引法に基づく表記</a>
+<a href="https://lp.tiget.net/contact-for-fans?_gl=1*d906re*_gcl_au*NDY4NDQ5NTMwLjE3NzI0NDA4MTM.">お問い合わせ</a>
+<a href="https://tiget.net/privacy_policy">プライバシーポリシー</a>
+<a href="https://www.grabss.co.jp/">会社情報</a>
+<a href="https://www.grabss.co.jp/">運営会社</a>
+<a href="https://www.career.grabss.co.jp/?__hstc=136062254.365a7ef95a3a83934f699eef2f30b6ea.1772440814493.1779007915634.1779018692963.5&amp;__hssc=136062254.10.1779018692963&amp;__hsfp=ac6553f14f049360fd77ea10da2c8972">採用情報</a>
+</div>
+<div class="footer-logo-row">
+<div class="footer-logo">TiGET</div>
+<div class="sns-icons">
+<div class="sns-icon">f</div>
+<div class="sns-icon">×</div>
+</div>
+</div>
+<p class="copyright">
+        Copyright (C) 2026 grabss Inc. All rights reserved.<br>
+        JASRAC許諾番号：9026969001Y45038 / Nextone許諾番号：ID0002166 / ID0002166
+      </p>
+</footer>
+</div>
+<div class="ticket-modal-overlay" id="ticketModal">
+<div class="ticket-modal-wrap">
+<button class="ticket-modal-close" id="closeTicketModal" type="button">×</button>
+<div class="ticket-modal-poster">
+<div class="image-slot">
+</div>
+<div class="ticket-clock">
+<svg aria-hidden="true" class="ticket-clock-ring" viewBox="0 0 100 100">
+<!-- 外周のグレーリング -->
+<circle class="ticket-clock-track" cx="50" cy="50" r="46"></circle>
+<!-- 1/4周の白い回転バー -->
+<circle class="ticket-clock-bar" cx="50" cy="50" r="46"></circle>
+</svg>
+<div class="ticket-clock-time" id="ticketClock">19:00</div>
+</div>
+</div>
+<div class="ticket-card-stage">
+<div class="ticket-slider" id="ticketSlider">
+<!-- 1枚目：チケット表示 / 入場受付・入場済み -->
+<section class="ticket-slide ticket-main-slide" data-slide-index="0"><div class="ticket-sheet">
+<button class="ticket-entry-button" type="button">入場受付</button>
+<div class="ticket-main-info">
+<p class="ticket-event-name">キャラフルアイドルフェス</p>
+<div class="ticket-type-row">
+<span>前方エリア</span>
+<span>1枚</span>
+</div>
+<p class="ticket-seat" id="displayTicketSeat">S 111</p>
+<div class="ticket-divider"></div>
+<p class="ticket-organizer">高橋 拓真 様</p>
+<p class="ticket-date-main">2026年09月19日（土）</p>
+<p class="ticket-open-time">・開場 09:45／開演 10:15</p>
+<p class="ticket-venue">
+  1000 CLUB
+  <span class="ticket-pin" aria-hidden="true">
+    <svg viewBox="0 0 24 24" class="ticket-pin-icon">
+      <path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"></path>
+      <circle cx="12" cy="10" r="2.8"></circle>
+    </svg>
+  </span>
+</p>
+</div>
+</div></section>
+<!-- 2枚目：事前アンケート -->
+<section class="ticket-slide survey-slide" data-slide-index="1"><div class="ticket-sheet">
+<div class="survey-title">事前アンケート</div>
+<div class="survey-row">
+<p class="survey-label">お目当てのグループ</p>
+<p class="survey-value is-bold">点染テンセイ少女。</p>
+</div>
+<div class="survey-row">
+<p class="survey-label">電話番号</p>
+<p class="survey-value">090-1921-6544</p>
+</div>
+<div class="survey-row">
+<p class="survey-label">住所</p>
+<p class="survey-value">〒102-8353 東京都千代田区六番町4番地5 SME六番町ビル</p>
+</div>
+<div class="survey-row">
+<p class="survey-label">氏名</p>
+<p class="survey-value">高橋 拓真</p>
+</div>
+</div></section>
+<!-- 3枚目：リセール手続 -->
+<section class="ticket-slide resale-slide" data-slide-index="2"><div class="ticket-sheet">
+<p class="ticket-guide-message">
+            分配で受け取ったチケットは<br>
+            リセール手続を行うことができません。
+          </p>
+<button class="resale-action-button" disabled="" type="button">
+<span>リセールする</span>
+<span class="resale-action-arrow">›</span>
+</button>
+<p class="resale-caution">
+            本券は購入者の氏名、連絡先を確認のうえ、販売しております。
+            主催者の同意のない有償譲渡を禁じます。
+          </p>
+</div></section>
+<!-- 4枚目：再分配不可 -->
+<section class="ticket-slide redistribute-slide" data-slide-index="3"><div class="ticket-sheet">
+<p class="ticket-guide-message">
+            分配で受け取ったチケットは<br>
+            再分配することができません。
+          </p>
+</div></section>
+</div>
+<!-- 固定アイコン：スライドしても位置は変わらない -->
+<nav aria-label="チケット情報の切り替え" class="ticket-bottom-icons">
+<button aria-label="チケット画面" class="ticket-round-icon is-active" data-slide-target="0" type="button">
+<svg fill="none" viewBox="0 0 48 48">
+<rect height="22" stroke-width="2" width="32" x="8" y="13"></rect>
+<line stroke-width="2" x1="15" x2="26" y1="20" y2="20"></line>
+<line stroke-width="2" x1="15" x2="32" y1="26" y2="26"></line>
+</svg>
+</button>
+<button aria-label="リセール画面" class="ticket-round-icon" data-slide-target="2" type="button">
+<svg fill="none" viewBox="0 0 48 48">
+<path d="M15 18C18 12 26 10 32 14C34 15 36 17 37 20" stroke-linecap="round" stroke-width="2"></path>
+<path d="M37 14V20H31" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M33 30C30 36 22 38 16 34C14 33 12 31 11 28" stroke-linecap="round" stroke-width="2"></path>
+<path d="M11 34V28H17" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
+</button>
+<button aria-label="事前アンケート画面" class="ticket-round-icon" data-slide-target="1" type="button">
+<svg fill="none" viewBox="0 0 48 48">
+<line stroke-width="2" x1="18" x2="37" y1="15" y2="15"></line>
+<line stroke-width="2" x1="18" x2="37" y1="24" y2="24"></line>
+<line stroke-width="2" x1="18" x2="37" y1="33" y2="33"></line>
+<rect height="4" stroke-width="2" width="4" x="10" y="12"></rect>
+<rect height="4" stroke-width="2" width="4" x="10" y="21"></rect>
+<rect height="4" stroke-width="2" width="4" x="10" y="30"></rect>
+</svg>
+</button>
+<button aria-label="再分配画面" class="ticket-round-icon" data-slide-target="3" type="button">
+<svg fill="none" viewBox="0 0 48 48">
+<rect height="28" stroke-width="2" width="28" x="10" y="10"></rect>
+<line stroke-width="2" x1="17" x2="31" y1="17" y2="17"></line>
+<line stroke-width="2" x1="17" x2="34" y1="23" y2="23"></line>
+<line stroke-width="2" x1="17" x2="28" y1="29" y2="29"></line>
+</svg>
+</button>
+</nav>
+</div>
+<div class="entry-confirm-overlay" id="entryConfirmModal">
+<div class="entry-confirm-box">
+<button class="entry-confirm-close" id="entryConfirmCloseButton" type="button">×</button>
+<p class="entry-confirm-title">入場受付をしますか？</p>
+<p class="entry-confirm-text">
+      この操作は取り消しができません。<br>
+      受付スタッフ以外は操作しないでください。
+    </p>
+<button class="entry-confirm-complete" id="entryCompleteButton" type="button">
+      受付完了
+    </button>
+<button class="entry-confirm-cancel" id="entryCancelButton" type="button">
+      キャンセル
+    </button>
+</div>
+</div>
+<div class="entry-confirm-overlay" id="enteredNoticeModal">
+<div class="entry-confirm-box entered-notice-box">
+<button class="entry-confirm-close" id="enteredNoticeCloseButton" type="button">×</button>
+<p class="entered-notice-title">このチケットは入場済みです</p>
+<p class="entered-notice-text">
+      このチケットは既に入場済みです。<br>
+      誤ってチェックインをした方は<br>
+      イベント主催者にお問い合わせください。
+    </p>
+<button class="entered-notice-button" id="enteredNoticeOkButton" type="button">
+      閉じる
+    </button>
+</div>
+</div>
+</div>
+</div>
+<div class="entry-loading-overlay" id="entryLoadingOverlay">
+<div class="entry-loading-spinner"></div>
+</div>
+<script>
+  const ticketModal = document.getElementById('ticketModal');
+  const openTicketButton = document.querySelector('.ticket-display-button');
+  const closeTicketButton = document.getElementById('closeTicketModal');
+  const ticketClock = document.getElementById('ticketClock');
+  const entryLoadingOverlay = document.getElementById('entryLoadingOverlay');
+
+  const ticketSlider = document.getElementById('ticketSlider');
+  const ticketSlides = Array.from(document.querySelectorAll('.ticket-slide'));
+  const ticketTabButtons = Array.from(document.querySelectorAll('.ticket-round-icon[data-slide-target]'));
+
+  const entryButton = document.querySelector('.ticket-entry-button');
+  const entryConfirmModal = document.getElementById('entryConfirmModal');
+  const entryCancelButton = document.getElementById('entryCancelButton');
+  const entryCompleteButton = document.getElementById('entryCompleteButton');
+  const entryConfirmCloseButton = document.getElementById('entryConfirmCloseButton');
+
+  const enteredNoticeModal = document.getElementById('enteredNoticeModal');
+  const enteredNoticeCloseButton = document.getElementById('enteredNoticeCloseButton');
+  const enteredNoticeOkButton = document.getElementById('enteredNoticeOkButton');
+
+  let currentSlide = 0;
+  let sliderScrollFrame = null;
+
+  function updateTicketClock() {
+    if (!ticketClock) return;
+
+    const now = new Date();
+    const hour = now.getHours();
+    const minute = String(now.getMinutes()).padStart(2, '0');
+    ticketClock.textContent = `${hour}:${minute}`;
+  }
+
+  function updateActiveIcon(index) {
+    ticketTabButtons.forEach(function (button) {
+      const target = Number(button.dataset.slideTarget);
+      button.classList.toggle('is-active', target === index);
+    });
+  }
+
+  function getSlideLeft(index) {
+    if (!ticketSlides.length) return 0;
+
+    /* gap を含めた各カードの正しい開始位置を返す */
+    return ticketSlides[index].offsetLeft - ticketSlides[0].offsetLeft;
+  }
+
+  function goToSlide(index, smooth) {
+    if (!ticketSlider || !ticketSlides.length) return;
+
+    const safeIndex = Math.max(0, Math.min(index, ticketSlides.length - 1));
+    currentSlide = safeIndex;
+
+    ticketSlider.scrollTo({
+      left: getSlideLeft(safeIndex),
+      behavior: smooth === false ? 'auto' : 'smooth'
+    });
+
+    updateActiveIcon(safeIndex);
+  }
+
+  function openTicketModal() {
+    updateTicketClock();
+
+    if (ticketModal) {
+      ticketModal.classList.add('is-open');
+      ticketModal.classList.remove('is-slide-up');
+    }
+
+    document.body.classList.add('ticket-modal-open');
+
+    // チケット表示ボタンから開いたときは1枚目を表示
+    requestAnimationFrame(function () {
+      goToSlide(0, false);
+    });
+  }
+
+  function closeTicketModal() {
+    if (ticketModal) {
+      ticketModal.classList.remove('is-open');
+      ticketModal.classList.remove('is-slide-up');
+    }
+
+    if (entryConfirmModal) {
+      entryConfirmModal.classList.remove('is-open');
+    }
+
+    if (enteredNoticeModal) {
+      enteredNoticeModal.classList.remove('is-open');
+    }
+
+    document.body.classList.remove('ticket-modal-open');
+  }
+
+  function openEntryConfirm() {
+    // 入場済みの場合は専用ダイアログを表示
+    if (entryButton && entryButton.classList.contains('is-entered')) {
+      openEnteredNotice();
+      return;
+    }
+
+    if (entryConfirmModal) {
+      entryConfirmModal.classList.add('is-open');
+    }
+  }
+
+  function closeEntryConfirm() {
+    if (entryConfirmModal) {
+      entryConfirmModal.classList.remove('is-open');
+    }
+  }
+
+  function showEntryLoading() {
+    closeEntryConfirm();
+
+    if (ticketModal) {
+      ticketModal.classList.remove('is-open');
+      ticketModal.classList.remove('is-slide-up');
+    }
+
+    document.body.classList.remove('ticket-modal-open');
+
+    if (entryLoadingOverlay) {
+      entryLoadingOverlay.classList.add('is-open');
+    }
+
+    document.body.classList.add('entry-loading-open');
+  }
+
+  function hideEntryLoading() {
+    if (entryLoadingOverlay) {
+      entryLoadingOverlay.classList.remove('is-open');
+    }
+
+    document.body.classList.remove('entry-loading-open');
+  }
+
+  function openEnteredNotice() {
+    if (enteredNoticeModal) {
+      enteredNoticeModal.classList.add('is-open');
+    }
+  }
+
+  function closeEnteredNotice() {
+    if (enteredNoticeModal) {
+      enteredNoticeModal.classList.remove('is-open');
+    }
+
+    // 入場済み案内を閉じたら、チケットモーダル自体も閉じて一覧へ戻る
+    closeTicketModal();
+
+    const ticketButtonArea = document.querySelector('.ticket-button-wrap');
+    if (ticketButtonArea) {
+      ticketButtonArea.scrollIntoView({
+        behavior: 'smooth',
+        block: 'start'
+      });
+    }
+  }
+
+  if (ticketSlider) {
+    ticketSlider.addEventListener('scroll', function () {
+      if (sliderScrollFrame) return;
+
+      sliderScrollFrame = requestAnimationFrame(function () {
+        let nearestIndex = 0;
+        let nearestDistance = Infinity;
+
+        /* gap があっても、現在もっとも近いカードを正しく判定 */
+        ticketSlides.forEach(function (slide, index) {
+          const distance = Math.abs(ticketSlider.scrollLeft - getSlideLeft(index));
+          if (distance < nearestDistance) {
+            nearestDistance = distance;
+            nearestIndex = index;
+          }
+        });
+
+        if (nearestIndex !== currentSlide) {
+          currentSlide = nearestIndex;
+          updateActiveIcon(nearestIndex);
+        }
+
+        sliderScrollFrame = null;
+      });
+    });
+  }
+
+  ticketTabButtons.forEach(function (button) {
+    button.addEventListener('click', function () {
+      goToSlide(Number(button.dataset.slideTarget), true);
+    });
+  });
+
+  window.addEventListener('resize', function () {
+    goToSlide(currentSlide, false);
+  });
+
+  if (openTicketButton) {
+    openTicketButton.addEventListener('click', openTicketModal);
+  }
+
+  if (closeTicketButton) {
+    closeTicketButton.addEventListener('click', closeTicketModal);
+  }
+
+  if (entryButton) {
+    entryButton.addEventListener('click', openEntryConfirm);
+  }
+
+  if (entryConfirmCloseButton) {
+    entryConfirmCloseButton.addEventListener('click', closeEntryConfirm);
+  }
+
+  if (entryCancelButton) {
+    entryCancelButton.addEventListener('click', closeEntryConfirm);
+  }
+
+  if (entryCompleteButton) {
+    entryCompleteButton.addEventListener('click', function () {
+      showEntryLoading();
+
+      setTimeout(function () {
+        hideEntryLoading();
+
+        if (entryButton) {
+          entryButton.classList.add('is-entered');
+          entryButton.textContent = '入場済み';
+        }
+
+        if (ticketModal) {
+          ticketModal.classList.add('is-open');
+          ticketModal.classList.add('is-slide-up');
+        }
+
+        document.body.classList.add('ticket-modal-open');
+
+        requestAnimationFrame(function () {
+          goToSlide(0, false);
+        });
+
+        setTimeout(function () {
+          if (ticketModal) {
+            ticketModal.classList.remove('is-slide-up');
+          }
+        }, 450);
+      }, 1000);
+    });
+  }
+
+  if (enteredNoticeCloseButton) {
+    enteredNoticeCloseButton.addEventListener('click', closeEnteredNotice);
+  }
+
+  if (enteredNoticeOkButton) {
+    enteredNoticeOkButton.addEventListener('click', closeEnteredNotice);
+  }
+
+
+  function reflectSavedTicketNumber() {
+  const savedNumber = localStorage.getItem('userInput');
+
+  const displayReceptionNumber = document.getElementById('displayReceptionNumber');
+  const displayTicketSeat = document.getElementById('displayTicketSeat');
+
+  if (!savedNumber || savedNumber.trim() === '') {
+    return;
+  }
+
+  if (displayReceptionNumber) {
+    displayReceptionNumber.textContent = savedNumber;
+  }
+
+  if (displayTicketSeat) {
+    displayTicketSeat.textContent = savedNumber;
+  }
+}
+
+updateTicketClock();
+updateActiveIcon(0);
+setInterval(updateTicketClock, 1000);
+
+reflectSavedTicketNumber();
+</script>
+
+</body></html>
