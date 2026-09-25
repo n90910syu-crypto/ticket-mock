@@ -1951,7 +1951,7 @@ body.entry-loading-open {
 </div>
 <p class="ticket-seat" id="displayTicketSeat">S 111</p>
 <div class="ticket-divider"></div>
-<p class="ticket-organizer">高橋 拓真 様</p>
+<p class="ticket-organizer" id="displayOrganizerName">高橋 拓真 様</p>
 <p class="ticket-date-main">2026年09月19日（土）</p>
 <p class="ticket-open-time">・開場 09:45／開演 10:15</p>
 <p class="ticket-venue">
@@ -1970,19 +1970,19 @@ body.entry-loading-open {
 <div class="survey-title">事前アンケート</div>
 <div class="survey-row">
 <p class="survey-label">お目当てのグループ</p>
-<p class="survey-value is-bold">点染テンセイ少女。</p>
+<p class="survey-value is-bold" id="displaySurveyGroup">点染テンセイ少女。</p>
 </div>
 <div class="survey-row">
 <p class="survey-label">電話番号</p>
-<p class="survey-value">090-1921-6544</p>
+<p class="survey-value" id="displaySurveyPhone">090-1921-6544</p>
 </div>
 <div class="survey-row">
 <p class="survey-label">住所</p>
-<p class="survey-value">〒102-8353 東京都千代田区六番町4番地5 SME六番町ビル</p>
+<p class="survey-value" id="displaySurveyAddress">〒102-8353 東京都千代田区六番町4番地5 SME六番町ビル</p>
 </div>
 <div class="survey-row">
 <p class="survey-label">氏名</p>
-<p class="survey-value">高橋 拓真</p>
+<p class="survey-value" id="displaySurveyName">高橋 拓真</p>
 </div>
 </div></section>
 <!-- 3枚目：リセール手続 -->
@@ -2357,11 +2357,46 @@ body.entry-loading-open {
   }
 }
 
+  function reflectSavedProfile() {
+    const displayOrganizerName = document.getElementById('displayOrganizerName');
+    const displaySurveyGroup = document.getElementById('displaySurveyGroup');
+    const displaySurveyPhone = document.getElementById('displaySurveyPhone');
+    const displaySurveyAddress = document.getElementById('displaySurveyAddress');
+    const displaySurveyName = document.getElementById('displaySurveyName');
+
+    const savedName = localStorage.getItem('userName');
+    const savedGroup = localStorage.getItem('userGroup');
+    const savedPhone = localStorage.getItem('userPhone');
+    const savedAddress = localStorage.getItem('userAddress');
+
+    if (savedName && savedName.trim() !== '') {
+      if (displayOrganizerName) {
+        displayOrganizerName.textContent = savedName + ' 様';
+      }
+      if (displaySurveyName) {
+        displaySurveyName.textContent = savedName;
+      }
+    }
+
+    if (savedGroup && savedGroup.trim() !== '' && displaySurveyGroup) {
+      displaySurveyGroup.textContent = savedGroup;
+    }
+
+    if (savedPhone && savedPhone.trim() !== '' && displaySurveyPhone) {
+      displaySurveyPhone.textContent = savedPhone;
+    }
+
+    if (savedAddress && savedAddress.trim() !== '' && displaySurveyAddress) {
+      displaySurveyAddress.textContent = savedAddress;
+    }
+  }
+
 updateTicketClock();
 updateActiveIcon(0);
 setInterval(updateTicketClock, 1000);
 
 reflectSavedTicketNumber();
+reflectSavedProfile();
 </script>
 
 </body></html>

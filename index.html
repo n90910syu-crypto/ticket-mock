@@ -93,6 +93,22 @@
 
     <input id="userInput" type="text" placeholder="S">
 
+    <label for="userNameInput" style="margin-top:16px;">氏名</label>
+
+    <input id="userNameInput" type="text" placeholder="中村 海斗">
+
+    <label for="userGroupInput" style="margin-top:16px;">お目当てのグループ</label>
+
+    <input id="userGroupInput" type="text" placeholder="Peel the Apple">
+
+    <label for="userPhoneInput" style="margin-top:16px;">電話番号</label>
+
+    <input id="userPhoneInput" type="text" placeholder="090-3728-9947">
+
+    <label for="userAddressInput" style="margin-top:16px;">住所</label>
+
+    <input id="userAddressInput" type="text" placeholder="〒102-8353 東京都千代田区六番町4番地5 SME六番町ビル">
+
     <button type="button" class="btn save" id="saveBtn">
       保存
     </button>
@@ -118,17 +134,32 @@
 
   <script>
     const input = document.getElementById('userInput');
+    const nameInput = document.getElementById('userNameInput');
+    const groupInput = document.getElementById('userGroupInput');
+    const phoneInput = document.getElementById('userPhoneInput');
+    const addressInput = document.getElementById('userAddressInput');
     const saveBtn = document.getElementById('saveBtn');
 
-    // 保存済みがあれば復元、なければ「S 」を初期表示
-    const saved = localStorage.getItem('userInput');
-    input.value = saved && saved.trim() !== '' ? saved : 'S';
+    // 保存済みがあれば復元、なければ初期値(プレースホルダーと同じ)を表示
+    function restore(el, key, fallback) {
+      if (!el) return;
+      const saved = localStorage.getItem(key);
+      el.value = saved && saved.trim() !== '' ? saved : fallback;
+    }
 
-    // 保存のみ
+    restore(input, 'userInput', 'S');
+    restore(nameInput, 'userName', '中村 海斗');
+    restore(groupInput, 'userGroup', 'Peel the Apple');
+    restore(phoneInput, 'userPhone', '090-3728-9947');
+    restore(addressInput, 'userAddress', '〒102-8353 東京都千代田区六番町4番地5 SME六番町ビル');
+
+    // 保存
     saveBtn.addEventListener('click', function () {
-      const value = input.value.trim();
-
-      localStorage.setItem('userInput', value);
+      localStorage.setItem('userInput', input.value.trim());
+      localStorage.setItem('userName', nameInput.value.trim());
+      localStorage.setItem('userGroup', groupInput.value.trim());
+      localStorage.setItem('userPhone', phoneInput.value.trim());
+      localStorage.setItem('userAddress', addressInput.value.trim());
 
       alert('保存しました');
     });
