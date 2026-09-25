@@ -308,6 +308,7 @@
 
       // 複数の取得方法を順番に試す(1つ失敗しても次を試す)
       const attempts = [
+        function () { return fetch('https://nakao.n90910syu.workers.dev/?url=' + encodeURIComponent(url)); },
         function () { return fetch('https://api.codetabs.com/v1/proxy?quest=' + encodeURIComponent(url)); },
         function () { return fetch('https://api.allorigins.win/raw?url=' + encodeURIComponent(url)); },
         function () { return fetch(url); }
