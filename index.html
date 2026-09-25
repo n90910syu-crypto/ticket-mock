@@ -316,6 +316,19 @@
 
       fetchStatus.textContent = '取得中…';
 
+      // 前回の取得結果を一旦リセットしてから取得し直す
+      eventTitleInput.value = '';
+      eventTicketTypeInput.value = '';
+      ticketTypeSelect.innerHTML = '<option value="">-- 候補から選ぶ --</option>';
+      ticketTypeSelect.value = '';
+      ticketTypeSelect.style.display = 'none';
+      eventDateInput.value = '';
+      eventShowtimeInput.value = '';
+      eventImageInput.value = '';
+      updateImagePreview();
+      eventVenueInput.value = '';
+      eventVenueMapInput.value = '';
+
       let doc = null;
       let fetchError = null;
 
@@ -417,13 +430,18 @@
 
         if (ticketNames.length > 0) {
           ticketTypeSelect.style.display = 'block';
+        } else {
+          ticketTypeSelect.style.display = 'none';
         }
 
         if (ticketNames.length === 1) {
           eventTicketTypeInput.value = ticketNames[0];
           ticketTypeSelect.value = ticketNames[0];
           gotCount++;
-        } else if (ticketNames.length > 1 && !eventTicketTypeInput.value) {
+        } else if (ticketNames.length > 1) {
+          // 古い値が残っていると選択済みに見えて紛らわしいので一旦空にする
+          eventTicketTypeInput.value = '';
+          ticketTypeSelect.value = '';
           fetchStatus.textContent = 'チケット種別が複数見つかりました。プルダウンから選択するか入力してください。';
         }
       }
