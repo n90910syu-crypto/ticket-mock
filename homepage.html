@@ -1717,8 +1717,8 @@ body.entry-loading-open {
 <button class="ticket-display-button" type="button">チケット表示</button>
 </div>
 <article class="ticket-card">
-<p class="ticket-event-title">キャラフルアイドルフェス</p>
-<p class="ticket-date">2026年09月19日(土)</p>
+<p class="ticket-event-title" id="listEventTitle">キャラフルアイドルフェス</p>
+<p class="ticket-date" id="listEventDate">2026年09月19日(土)</p>
 <div class="ticket-table">
 <div class="ticket-calendar-icon" aria-hidden="true"><span>31</span><b>+</b></div>
 <div class="ticket-value"></div>
@@ -1926,7 +1926,7 @@ body.entry-loading-open {
 <button class="ticket-modal-close" id="closeTicketModal" type="button">×</button>
 <div class="ticket-modal-poster">
 <div class="image-slot">
-<img src="images/thumbnail.jpg" alt="">
+<img src="images/thumbnail.jpg" alt="" id="modalEventImage">
 </div>
 <div class="ticket-clock">
 <svg aria-hidden="true" class="ticket-clock-ring" viewBox="0 0 100 100">
@@ -1944,16 +1944,16 @@ body.entry-loading-open {
 <section class="ticket-slide ticket-main-slide" data-slide-index="0"><div class="ticket-sheet">
 <button class="ticket-entry-button" type="button">入場受付</button>
 <div class="ticket-main-info">
-<p class="ticket-event-name">キャラフルアイドルフェス</p>
+<p class="ticket-event-name" id="modalEventName">キャラフルアイドルフェス</p>
 <div class="ticket-type-row">
-<span>前方エリア</span>
+<span id="modalTicketType">前方エリア</span>
 <span>1枚</span>
 </div>
 <p class="ticket-seat" id="displayTicketSeat">S 111</p>
 <div class="ticket-divider"></div>
 <p class="ticket-organizer" id="displayOrganizerName">高橋 拓真 様</p>
-<p class="ticket-date-main">2026年09月19日（土）</p>
-<p class="ticket-open-time">・開場 09:45／開演 10:15</p>
+<p class="ticket-date-main" id="modalEventDate">2026年09月19日（土）</p>
+<p class="ticket-open-time" id="modalShowtime">・開場 09:45／開演 10:15</p>
 <p class="ticket-venue">
   1000 CLUB
   <span class="ticket-pin" aria-hidden="true">
@@ -2391,12 +2391,51 @@ body.entry-loading-open {
     }
   }
 
+  function reflectSavedEvent() {
+    const eventTitle = localStorage.getItem('eventTitle');
+    const eventDate = localStorage.getItem('eventDate');
+    const eventShowtime = localStorage.getItem('eventShowtime');
+    const eventImage = localStorage.getItem('eventImage');
+    const eventTicketType = localStorage.getItem('eventTicketType');
+
+    const listEventTitle = document.getElementById('listEventTitle');
+    const listEventDate = document.getElementById('listEventDate');
+    const modalEventName = document.getElementById('modalEventName');
+    const modalTicketType = document.getElementById('modalTicketType');
+    const modalEventDate = document.getElementById('modalEventDate');
+    const modalShowtime = document.getElementById('modalShowtime');
+    const modalEventImage = document.getElementById('modalEventImage');
+
+    if (eventTitle && eventTitle.trim() !== '') {
+      if (listEventTitle) listEventTitle.textContent = eventTitle;
+      if (modalEventName) modalEventName.textContent = eventTitle;
+    }
+
+    if (eventDate && eventDate.trim() !== '') {
+      if (listEventDate) listEventDate.textContent = eventDate;
+      if (modalEventDate) modalEventDate.textContent = eventDate;
+    }
+
+    if (eventShowtime && eventShowtime.trim() !== '' && modalShowtime) {
+      modalShowtime.textContent = '・' + eventShowtime;
+    }
+
+    if (eventTicketType && eventTicketType.trim() !== '' && modalTicketType) {
+      modalTicketType.textContent = eventTicketType;
+    }
+
+    if (eventImage && eventImage.trim() !== '' && modalEventImage) {
+      modalEventImage.src = eventImage;
+    }
+  }
+
 updateTicketClock();
 updateActiveIcon(0);
 setInterval(updateTicketClock, 1000);
 
 reflectSavedTicketNumber();
 reflectSavedProfile();
+reflectSavedEvent();
 </script>
 
 </body></html>
