@@ -211,6 +211,10 @@
 
     <input id="eventUrlInput" type="text" placeholder="https://tiget.net/events/524277">
 
+    <a href="javascript:void(0);" target="_blank" rel="noopener" class="btn link disabled" id="openEventUrlLink" style="margin-top:8px; display:block;">
+      このURLを開く
+    </a>
+
     <button type="button" class="btn fetch-btn" id="fetchBtn">
       イベント情報を取得
     </button>
@@ -321,6 +325,7 @@
     // TIGETイベント情報の自動取得
     // ==========================
     const eventUrlInput = document.getElementById('eventUrlInput');
+    const openEventUrlLink = document.getElementById('openEventUrlLink');
     const fetchBtn = document.getElementById('fetchBtn');
     const fetchStatus = document.getElementById('fetchStatus');
     const eventTitleInput = document.getElementById('eventTitleInput');
@@ -426,6 +431,20 @@
         goLink.classList.add('disabled');
       }
     });
+
+    // 入力されたURLへの「このURLを開く」リンクを更新
+    function updateOpenEventUrlLink() {
+      const url = eventUrlInput.value.trim();
+      if (url) {
+        openEventUrlLink.href = url;
+        openEventUrlLink.classList.remove('disabled');
+      } else {
+        openEventUrlLink.href = 'javascript:void(0);';
+        openEventUrlLink.classList.add('disabled');
+      }
+    }
+    eventUrlInput.addEventListener('input', updateOpenEventUrlLink);
+    updateOpenEventUrlLink();
 
     fetchBtn.addEventListener('click', async function () {
       const url = eventUrlInput.value.trim();
