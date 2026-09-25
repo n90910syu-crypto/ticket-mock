@@ -192,6 +192,12 @@
     <label for="eventImageInput" style="margin-top:16px;">画像URL</label>
     <input id="eventImageInput" type="text" placeholder="自動取得 or 手入力">
 
+    <label for="eventVenueInput" style="margin-top:16px;">会場名</label>
+    <input id="eventVenueInput" type="text" placeholder="自動取得 or 手入力">
+
+    <label for="eventVenueMapInput" style="margin-top:16px;">地図URL(任意)</label>
+    <input id="eventVenueMapInput" type="text" placeholder="自動取得 or 手入力(なくても可)">
+
     <div class="result-box show" id="resultBox">
       <img id="resultImage" src="" alt="" style="display:none;">
     </div>
@@ -245,6 +251,8 @@
     restore(document.getElementById('eventDateInput'), 'eventDate', '');
     restore(document.getElementById('eventShowtimeInput'), 'eventShowtime', '');
     restore(document.getElementById('eventImageInput'), 'eventImage', '');
+    restore(document.getElementById('eventVenueInput'), 'eventVenue', '');
+    restore(document.getElementById('eventVenueMapInput'), 'eventVenueMapUrl', '');
     // 保存
     saveBtn.addEventListener('click', function () {
       localStorage.setItem('userInput', input.value.trim());
@@ -268,6 +276,8 @@
     const eventDateInput = document.getElementById('eventDateInput');
     const eventShowtimeInput = document.getElementById('eventShowtimeInput');
     const eventImageInput = document.getElementById('eventImageInput');
+    const eventVenueInput = document.getElementById('eventVenueInput');
+    const eventVenueMapInput = document.getElementById('eventVenueMapInput');
     const resultImage = document.getElementById('resultImage');
     const saveEventBtn = document.getElementById('saveEventBtn');
 
@@ -372,6 +382,21 @@
           gotCount++;
         }
 
+        // 会場名は "maps.google.com" へのリンクを手がかりに取得する
+        const venueEl = doc.querySelector('a[href*="maps.google.com"]');
+        if (venueEl) {
+          const venueName = venueEl.textContent.trim();
+          const venueMapUrl = venueEl.getAttribute('href') || '';
+          if (venueName) {
+            eventVenueInput.value = venueName;
+            gotCount++;
+          }
+          if (venueMapUrl) {
+            eventVenueMapInput.value = venueMapUrl;
+            gotCount++;
+          }
+        }
+
         const ticketNameEls = doc.querySelectorAll('.c-ordering-btn__content__name');
         const ticketNames = Array.from(ticketNameEls)
           .map(extractLeadingText)
@@ -407,6 +432,8 @@
       localStorage.setItem('eventDate', eventDateInput.value.trim());
       localStorage.setItem('eventShowtime', eventShowtimeInput.value.trim());
       localStorage.setItem('eventImage', eventImageInput.value.trim());
+      localStorage.setItem('eventVenue', eventVenueInput.value.trim());
+      localStorage.setItem('eventVenueMapUrl', eventVenueMapInput.value.trim());
       localStorage.setItem('eventTicketType', eventTicketTypeInput.value.trim());
 
       alert('イベント情報を保存しました');

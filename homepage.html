@@ -1955,13 +1955,15 @@ body.entry-loading-open {
 <p class="ticket-date-main" id="modalEventDate">2026年09月19日（土）</p>
 <p class="ticket-open-time" id="modalShowtime">・開場 09:45／開演 10:15</p>
 <p class="ticket-venue">
-  1000 CLUB
+  <a id="modalVenueLink" href="javascript:void(0);" target="_blank" style="color:inherit; text-decoration:none;">
+  <span id="modalVenueName">1000 CLUB</span>
   <span class="ticket-pin" aria-hidden="true">
     <svg viewBox="0 0 24 24" class="ticket-pin-icon">
       <path d="M12 22s7-7.2 7-12a7 7 0 1 0-14 0c0 4.8 7 12 7 12z"></path>
       <circle cx="12" cy="10" r="2.8"></circle>
     </svg>
   </span>
+  </a>
 </p>
 </div>
 </div></section>
@@ -2405,6 +2407,11 @@ body.entry-loading-open {
     const modalEventDate = document.getElementById('modalEventDate');
     const modalShowtime = document.getElementById('modalShowtime');
     const modalEventImage = document.getElementById('modalEventImage');
+    const modalVenueName = document.getElementById('modalVenueName');
+    const modalVenueLink = document.getElementById('modalVenueLink');
+
+    const eventVenue = localStorage.getItem('eventVenue');
+    const eventVenueMapUrl = localStorage.getItem('eventVenueMapUrl');
 
     if (eventTitle && eventTitle.trim() !== '') {
       if (listEventTitle) listEventTitle.textContent = eventTitle;
@@ -2426,6 +2433,14 @@ body.entry-loading-open {
 
     if (eventImage && eventImage.trim() !== '' && modalEventImage) {
       modalEventImage.src = eventImage;
+    }
+
+    if (eventVenue && eventVenue.trim() !== '' && modalVenueName) {
+      modalVenueName.textContent = eventVenue;
+    }
+
+    if (eventVenueMapUrl && eventVenueMapUrl.trim() !== '' && modalVenueLink) {
+      modalVenueLink.href = eventVenueMapUrl;
     }
   }
 
