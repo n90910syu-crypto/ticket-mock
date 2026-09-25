@@ -76,6 +76,12 @@
       color: #333;
     }
 
+    .link.disabled {
+      opacity: 0.45;
+      pointer-events: none;
+      cursor: not-allowed;
+    }
+
     .note {
       margin-top: 14px;
       font-size: 13px;
@@ -160,10 +166,6 @@
 
     <input id="userAddressInput" type="text" placeholder="〒102-8353 東京都千代田区六番町4番地5 SME六番町ビル">
 
-    <button type="button" class="btn save" id="saveBtn">
-      保存
-    </button>
-
     <hr class="divider">
 
     <label for="eventUrlInput">TIGETイベントURL</label>
@@ -202,14 +204,14 @@
       <img id="resultImage" src="" alt="" style="display:none;">
     </div>
 
-    <button type="button" class="btn save" id="saveEventBtn" style="margin-top:14px;">
-      この内容を保存
+    <hr class="divider">
+
+    <button type="button" class="btn save" id="saveAllBtn">
+      保存
     </button>
 
-
-
     <div class="link-area">
-      <a href="homepage.html" class="btn link">
+      <a href="homepage.html" class="btn link disabled" id="goLink">
         GO
       </a>
     </div>
@@ -231,7 +233,7 @@
     const groupInput = document.getElementById('userGroupInput');
     const phoneInput = document.getElementById('userPhoneInput');
     const addressInput = document.getElementById('userAddressInput');
-    const saveBtn = document.getElementById('saveBtn');
+    const goLink = document.getElementById('goLink');
 
     // 保存済みがあれば復元、なければ初期値(プレースホルダーと同じ)を表示
     function restore(el, key, fallback) {
@@ -253,16 +255,8 @@
     restore(document.getElementById('eventImageInput'), 'eventImage', '');
     restore(document.getElementById('eventVenueInput'), 'eventVenue', '');
     restore(document.getElementById('eventVenueMapInput'), 'eventVenueMapUrl', '');
-    // 保存
-    saveBtn.addEventListener('click', function () {
-      localStorage.setItem('userInput', input.value.trim());
-      localStorage.setItem('userName', nameInput.value.trim());
-      localStorage.setItem('userGroup', groupInput.value.trim());
-      localStorage.setItem('userPhone', phoneInput.value.trim());
-      localStorage.setItem('userAddress', addressInput.value.trim());
 
-      alert('保存しました');
-    });
+    // GOは常に「保存」を押すまで無効。ページを開き直した時点で毎回無効に戻す。
 
     // ==========================
     // TIGETイベント情報の自動取得
@@ -279,7 +273,7 @@
     const eventVenueInput = document.getElementById('eventVenueInput');
     const eventVenueMapInput = document.getElementById('eventVenueMapInput');
     const resultImage = document.getElementById('resultImage');
-    const saveEventBtn = document.getElementById('saveEventBtn');
+    const saveAllBtn = document.getElementById('saveAllBtn');
 
     // <br>より前のテキストだけを取り出す(ネストしたdivや価格部分を除外)
     function extractLeadingText(el) {
@@ -427,7 +421,13 @@
       }
     });
 
-    saveEventBtn.addEventListener('click', function () {
+    saveAllBtn.addEventListener('click', function () {
+      localStorage.setItem('userInput', input.value.trim());
+      localStorage.setItem('userName', nameInput.value.trim());
+      localStorage.setItem('userGroup', groupInput.value.trim());
+      localStorage.setItem('userPhone', phoneInput.value.trim());
+      localStorage.setItem('userAddress', addressInput.value.trim());
+
       localStorage.setItem('eventTitle', eventTitleInput.value.trim());
       localStorage.setItem('eventDate', eventDateInput.value.trim());
       localStorage.setItem('eventShowtime', eventShowtimeInput.value.trim());
@@ -436,7 +436,23 @@
       localStorage.setItem('eventVenueMapUrl', eventVenueMapInput.value.trim());
       localStorage.setItem('eventTicketType', eventTicketTypeInput.value.trim());
 
-      alert('イベント情報を保存しました');
+      goLink.classList.remove('disabled');
+
+      alert('保存しました');
+    });
+
+    // 保存後に何かの入力欄が変更されたら、再度保存するまでGOを無効化する
+    const allInputs = [
+      input, nameInput, groupInput, phoneInput, addressInput,
+      eventUrlInput, eventTitleInput, eventTicketTypeInput,
+      eventDateInput, eventShowtimeInput, eventImageInput,
+      eventVenueInput, eventVenueMapInput
+    ];
+    allInputs.forEach(function (el) {
+      if (!el) return;
+      el.addEventListener('input', function () {
+        goLink.classList.add('disabled');
+      });
     });
   </script>
 
