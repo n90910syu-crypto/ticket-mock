@@ -425,9 +425,74 @@
     eventImageInput.addEventListener('input', updateImagePreview);
     updateImagePreview();
 
+    // ---- TIGET本体と同じ「どこから何を取るか」 ----
+    // TIGETのチケット画面(showTicket → renderTicketContent)は、次の値を使って表示している。
+    //   title=イベント名 / play_date=開催日 / open_time・start_time=開場・開演 / place+safe_map_url=会場名とそのリンク
+    //   image=イベント画像 / ticket_name=チケット名。
+    // イベントページ(公開ページ)では、これらはそれぞれ次の場所にある。
+    //   イベント名 : h1.pg-event__header__title        (予備: og:title)
+    //   開催日     : .pg-event__ordering__program__datetime  (予備: 開催日の項目 / ld+jsonのstartDate)
+    //   会場名と地図: address.pg-event__header__address の a  (文字=会場名、href=地図などのリンク)
+    //   開場・開演 : #event-ticket 内の dt「開場 15:30 / 開演 16:00」。同じ dl の h6 が、そのチケット名
+    //   チケット名 : .c-ordering-btn__content__name の <br> より前
+    //   画像       : .pg-event__event_image__figure img の data-src  (予備: og:image)
+    let ticketShowtimeMap = {};   // チケット名 → 「開場 xx:xx／開演 xx:xx」
+
+    function ownText(el) {
+      let t = '';
+      el.childNodes.forEach(function (n) { if (n.nodeType === 3) t += n.textContent; });
+      return t.replace(/\s+/g, ' ').trim();
+    }
+
+    function normalizeShowtime(raw) {
+      const m = String(raw || '').match(/開場\s*(\d{1,2}):(\d{2}).*?開演\s*(\d{1,2}):(\d{2})/);
+      if (!m) return '';
+      return '開場 ' + m[1].padStart(2, '0') + ':' + m[2] + '／開演 ' + m[3].padStart(2, '0') + ':' + m[4];
+    }
+
+    // 開場・開演を欄とプルダウンに反映する
+    function applyShowtime(text) {
+      if (!text) return;
+      eventShowtimeInput.value = text;
+      const m = text.match(/開場 (\d{2}):(\d{2})／開演 (\d{2}):(\d{2})/);
+      if (m) {
+        openHourSelect.value = m[1];
+        openMinuteSelect.value = m[2];
+        startHourSelect.value = m[3];
+        startMinuteSelect.value = m[4];
+      }
+    }
+
+    // #event-ticket の各 dl から、チケット名ごとの開場・開演を集める(TIGETはチケットごとに時刻を持つ)
+    function collectTicketShowtimes(doc) {
+      const map = {};
+      doc.querySelectorAll('#event-ticket dl.pg-event__detail__section').forEach(function (dl) {
+        const dt = dl.querySelector('.pg-event__detail__title');
+        const h6 = dl.querySelector('.pg-event__detail__ticket__title');
+        const time = dt ? normalizeShowtime(dt.textContent) : '';
+        if (!time || !h6) return;
+        // 「●予約(【前方】観覧チケット ※再入場時１D)」→「【前方】観覧チケット ※再入場時１D」
+        const name = h6.textContent.trim().replace(/^[●○◆■]?\s*[^(（]*[(（]/, '').replace(/[)）]\s*$/, '').trim();
+        if (name) map[name] = time;
+        map['\u0000h6:' + h6.textContent.trim()] = time;
+      });
+      return map;
+    }
+
+    function showtimeForTicket(name) {
+      if (!name) return '';
+      if (ticketShowtimeMap[name]) return ticketShowtimeMap[name];
+      // 表記ゆれ(空白や括弧の違い)に備えて、含み合いでも探す
+      const keys = Object.keys(ticketShowtimeMap).filter(function (k) { return k.charAt(0) !== '\u0000'; });
+      const hit = keys.find(function (k) { return k.indexOf(name) !== -1 || name.indexOf(k) !== -1; });
+      return hit ? ticketShowtimeMap[hit] : '';
+    }
+
     ticketTypeSelect.addEventListener('change', function () {
       if (ticketTypeSelect.value) {
         eventTicketTypeInput.value = ticketTypeSelect.value;
+        // チケットを変えたら、そのチケットの開場・開演に切り替える(TIGETもチケットごとの時刻を表示する)
+        applyShowtime(showtimeForTicket(ticketTypeSelect.value));
         goLink.classList.add('disabled');
       }
     });
@@ -467,6 +532,7 @@
       updateImagePreview();
       eventVenueInput.value = '';
       eventVenueMapInput.value = '';
+      ticketShowtimeMap = {};
 
       let doc = null;
       let fetchError = null;
@@ -503,14 +569,29 @@
 
       if (doc) {
         const titleEl = doc.querySelector('.pg-event__header__title');
-        if (titleEl && titleEl.textContent.trim()) {
-          eventTitleInput.value = titleEl.textContent.trim();
+        const ogTitle = doc.querySelector('meta[property="og:title"]');
+        const titleText = (titleEl && titleEl.textContent.trim()) || (ogTitle && ogTitle.getAttribute('content') || '').trim();
+        if (titleText) {
+          eventTitleInput.value = titleText;
           gotCount++;
         }
 
         const dateEl = doc.querySelector('.pg-event__ordering__program__datetime');
-        if (dateEl && dateEl.textContent.trim()) {
-          const rawDate = dateEl.textContent.trim();
+        let rawDate = dateEl ? dateEl.textContent.replace(/\u00a0/g, ' ').trim() : '';
+        if (!rawDate) {
+          // 予備: 「開催日」の項目、または ld+json の startDate
+          doc.querySelectorAll('.pg-event__detail__section').forEach(function (dl) {
+            const dt = dl.querySelector('.pg-event__detail__title');
+            const dd = dl.querySelector('.pg-event__detail__contents');
+            if (!rawDate && dt && dt.textContent.trim() === '開催日' && dd) rawDate = dd.textContent.trim();
+          });
+        }
+        if (!rawDate) {
+          const ld = doc.querySelector('script[type="application/ld+json"]');
+          const lm = ld ? /"startDate"\s*:\s*"([^"]+)"/.exec(ld.textContent) : null;
+          if (lm) rawDate = lm[1];
+        }
+        if (rawDate) {
           // 会場の開場時刻など余計な部分を除き、日付(+曜日)だけを取り出す
           const dateMatch = rawDate.match(/(\d{4})年(\d{1,2})月(\d{1,2})日(?:\(([^)]+)\))?/);
           if (dateMatch) {
@@ -530,49 +611,49 @@
           gotCount++;
         }
 
-        const detailTitleEls = doc.querySelectorAll('.pg-event__detail__title');
+        // 開場・開演: チケットごとに持っている(後でチケットを選んだとき、そのチケットの時刻に切り替わる)
+        ticketShowtimeMap = collectTicketShowtimes(doc);
         let showtime = '';
-        detailTitleEls.forEach(function (el) {
-          const t = el.textContent.trim();
-          if (t.includes('開場') || t.includes('開演')) {
-            showtime = t;
-          }
-        });
+        const firstH6Key = Object.keys(ticketShowtimeMap)[0];
+        if (firstH6Key) showtime = ticketShowtimeMap[firstH6Key];
+        if (!showtime) {
+          doc.querySelectorAll('.pg-event__detail__title').forEach(function (el) {
+            if (!showtime) showtime = normalizeShowtime(el.textContent);
+          });
+        }
         if (showtime) {
-          // 表記ゆれを吸収しつつ「開場 xx:xx／開演 xx:xx」の形に整形する
-          const timeMatch = showtime.match(/開場\s*(\d{1,2}):(\d{2}).*?開演\s*(\d{1,2}):(\d{2})/);
-          if (timeMatch) {
-            const oh = timeMatch[1].padStart(2, '0');
-            const om = timeMatch[2];
-            const sh = timeMatch[3].padStart(2, '0');
-            const sm = timeMatch[4];
-            eventShowtimeInput.value = '開場 ' + oh + ':' + om + '／開演 ' + sh + ':' + sm;
-
-            // プルダウンの初期値も取得した時刻に合わせておく
-            openHourSelect.value = oh;
-            openMinuteSelect.value = om;
-            startHourSelect.value = sh;
-            startMinuteSelect.value = sm;
-          } else {
-            eventShowtimeInput.value = showtime;
-          }
+          applyShowtime(showtime);
           gotCount++;
         }
 
         const imgEl = doc.querySelector('.pg-event__event_image__figure img');
-        const imageUrl = imgEl
+        const ogImage = doc.querySelector('meta[property="og:image"]');
+        let imageUrl = imgEl
           ? (imgEl.getAttribute('data-src') || imgEl.getAttribute('src') || '')
           : '';
+        // 保存したページなどで画像が「ダミー」になっている場合は、og:image(本物の画像)を使う
+        if (!imageUrl || /dammy|\.gif(\?|$)/.test(imageUrl)) {
+          imageUrl = ogImage ? (ogImage.getAttribute('content') || '') : imageUrl;
+        }
+        if (imageUrl.indexOf('//') === 0) imageUrl = 'https:' + imageUrl;
         if (imageUrl) {
           eventImageInput.value = imageUrl;
           updateImagePreview();
           gotCount++;
         }
 
-        // 会場名は "maps.google.com" へのリンクを手がかりに取得する
-        const venueEl = doc.querySelector('a[href*="maps.google.com"]');
+        // 会場: TIGETのチケット画面は place(会場名) と safe_map_url(そのリンク)を使う。
+        // イベントページでは、見出し下の address 内のリンクが同じもの(文字=会場名、href=リンク先)。
+        let venueEl = doc.querySelector('.pg-event__header__address a');
+        if (!venueEl) {
+          doc.querySelectorAll('.pg-event__detail__section').forEach(function (dl) {
+            const dt = dl.querySelector('.pg-event__detail__title');
+            if (!venueEl && dt && dt.textContent.trim() === '会場') venueEl = dl.querySelector('.pg-event__detail__contents a');
+          });
+        }
+        if (!venueEl) venueEl = doc.querySelector('a[href*="maps.google.com"]');
         if (venueEl) {
-          const venueName = venueEl.textContent.trim();
+          const venueName = ownText(venueEl) || venueEl.textContent.trim();
           const venueMapUrl = venueEl.getAttribute('href') || '';
           if (venueName) {
             eventVenueInput.value = venueName;
@@ -608,6 +689,7 @@
         if (ticketNames.length === 1) {
           eventTicketTypeInput.value = ticketNames[0];
           ticketTypeSelect.value = ticketNames[0];
+          applyShowtime(showtimeForTicket(ticketNames[0]));
           gotCount++;
         } else if (ticketNames.length > 1) {
           // 古い値が残っていると選択済みに見えて紛らわしいので一旦空にする

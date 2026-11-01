@@ -2420,7 +2420,8 @@ body.entry-loading-open {
 
     if (eventDate && eventDate.trim() !== '') {
       if (listEventDate) listEventDate.textContent = eventDate;
-      if (modalEventDate) modalEventDate.textContent = eventDate;
+      // TIGET本体は moment().format('YYYY年MM月DD日（dd）') で、曜日を全角のかっこで表示する
+      if (modalEventDate) modalEventDate.textContent = eventDate.replace(/\(([^)]+)\)/, '（$1）');
     }
 
     if (eventShowtime && eventShowtime.trim() !== '' && modalShowtime) {
