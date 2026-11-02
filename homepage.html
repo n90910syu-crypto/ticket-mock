@@ -1660,6 +1660,23 @@ body.entry-loading-open {
 
 
 
+/* =========================
+  チケット画面の色(TIGETの specific_color 相当)
+  入場受付ボタンと時計の丸が同じ色になる。指定がなければ標準の色。
+  入場済みのボタン(赤)は、本体と同じく色の対象外。
+========================= */
+.ticket-entry-button:not(.is-entered) {
+  background: var(--ticket-color, #2d98c8);
+}
+
+.ticket-clock {
+  background: var(--ticket-clock-bg, rgba(0, 0, 0, 0.73));
+  box-shadow: var(--ticket-clock-shadow, none);
+}
+
+.ticket-clock-track {
+  stroke: var(--ticket-clock-track, #7a7a7a);
+}
 </style>
 </head>
 <body class="">
@@ -2425,7 +2442,19 @@ body.entry-loading-open {
     }
 
     if (eventShowtime && eventShowtime.trim() !== '' && modalShowtime) {
-      modalShowtime.textContent = '・' + eventShowtime;
+      // 単日のイベントは「・開場…」。通し券形式のイベントは「・」なしで表示される(本体の表示に合わせる)
+      const noDot = localStorage.getItem('tigetShowtimeNoDot') === '1';
+      modalShowtime.textContent = (noDot ? '' : '・') + eventShowtime;
+    }
+
+    // 本体は specific_color があると、入場受付ボタンと時計の丸をその色にする
+    const tigetColor = (localStorage.getItem('tigetColor') || '').trim();
+    if (/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(tigetColor)) {
+      const root = document.documentElement.style;
+      root.setProperty('--ticket-color', tigetColor);
+      root.setProperty('--ticket-clock-bg', tigetColor);
+      root.setProperty('--ticket-clock-shadow', '0 0 0 3px ' + tigetColor);
+      root.setProperty('--ticket-clock-track', tigetColor);
     }
 
     if (eventTicketType && eventTicketType.trim() !== '' && modalTicketType) {

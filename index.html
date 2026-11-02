@@ -269,6 +269,26 @@
     <label for="eventVenueMapInput" style="margin-top:16px;">地図URL(任意)</label>
     <input id="eventVenueMapInput" type="text" placeholder="自動取得 or 手入力(なくても可)">
 
+    <label for="ticketColorSelect" style="margin-top:16px;">チケット画面の色(入場受付ボタンと上の時計の丸)</label>
+    <select id="ticketColorSelect" style="margin-bottom:8px;">
+      <option value="">標準(青)</option>
+      <option value="#1cb804">緑</option>
+      <option value="#e5265c">赤</option>
+      <option value="#ff8c00">オレンジ</option>
+      <option value="#f2c200">黄</option>
+      <option value="#17b8d4">水色</option>
+      <option value="#8a4fd8">紫</option>
+      <option value="#ff5fa2">ピンク</option>
+      <option value="#333333">黒</option>
+      <option value="custom">自由に選ぶ…</option>
+    </select>
+    <input id="ticketColorPicker" type="color" value="#1cb804" style="height:40px; padding:2px; display:none;">
+
+    <label style="margin-top:16px; display:flex; align-items:center; gap:8px; font-weight:normal;">
+      <input id="showtimeNoDotCheck" type="checkbox" style="width:auto;">
+      開場・開演の前の「・」を付けない(通し券形式のイベント)
+    </label>
+
     <div class="result-box show" id="resultBox">
       <img id="resultImage" src="" alt="" style="display:none;">
     </div>
@@ -708,7 +728,26 @@
       }
     });
 
+    // ---- チケット画面の色 ----
+    // TIGET本体は、イベントごとに決まった色(specific_color)を入場受付ボタンと時計の丸に使う。
+    // 色はイベントのページからは分からないので、ここで選ぶ。選ばなければ標準の色。
+    const ticketColorSelect = document.getElementById('ticketColorSelect');
+    const ticketColorPicker = document.getElementById('ticketColorPicker');
+    const showtimeNoDotCheck = document.getElementById('showtimeNoDotCheck');
+    function currentTicketColor() {
+      if (ticketColorSelect.value === 'custom') return ticketColorPicker.value;
+      return ticketColorSelect.value;
+    }
+    ticketColorSelect.addEventListener('change', function () {
+      ticketColorPicker.style.display = ticketColorSelect.value === 'custom' ? 'block' : 'none';
+      goLink.classList.add('disabled');
+    });
+    ticketColorPicker.addEventListener('input', function () { goLink.classList.add('disabled'); });
+    showtimeNoDotCheck.addEventListener('change', function () { goLink.classList.add('disabled'); });
+
     saveAllBtn.addEventListener('click', function () {
+      localStorage.setItem('tigetColor', currentTicketColor());
+      localStorage.setItem('tigetShowtimeNoDot', showtimeNoDotCheck.checked ? '1' : '');
       localStorage.setItem('userInput', input.value.trim());
       localStorage.setItem('userName', nameInput.value.trim());
       localStorage.setItem('userGroup', groupInput.value.trim());
