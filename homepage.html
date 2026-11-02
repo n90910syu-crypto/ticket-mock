@@ -2022,10 +2022,6 @@ body.entry-loading-open {
   z-index: 10002;
 }
 
-/* フッターアイコン:本物のPNG画像を使用 */
-.ticket-round-icon { display:flex; align-items:center; justify-content:center; background:#fff; border-radius:50%; }
-.ticket-round-icon img { width:30px; height:30px; display:block; }
-.ticket-round-icon img[src$="redistribute.png"] { width:23px; height:15px; }
 </style>
 </head>
 <body class="">
@@ -2374,16 +2370,37 @@ body.entry-loading-open {
 <!-- 固定アイコン：スライドしても位置は変わらない -->
 <nav aria-label="チケット情報の切り替え" class="ticket-bottom-icons">
 <button aria-label="チケット画面" class="ticket-round-icon is-active" data-slide-target="0" type="button">
-<img alt="" src="images/footer_ticket.png">
+<svg fill="none" viewBox="0 0 48 48">
+<rect height="22" stroke-width="2" width="32" x="8" y="13"></rect>
+<line stroke-width="2" x1="15" x2="26" y1="20" y2="20"></line>
+<line stroke-width="2" x1="15" x2="32" y1="26" y2="26"></line>
+</svg>
 </button>
 <button aria-label="リセール画面" class="ticket-round-icon" data-slide-target="2" type="button">
-<img alt="" src="images/footer_resale.png">
+<svg fill="none" viewBox="0 0 48 48">
+<path d="M15 18C18 12 26 10 32 14C34 15 36 17 37 20" stroke-linecap="round" stroke-width="2"></path>
+<path d="M37 14V20H31" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+<path d="M33 30C30 36 22 38 16 34C14 33 12 31 11 28" stroke-linecap="round" stroke-width="2"></path>
+<path d="M11 34V28H17" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
+</svg>
 </button>
 <button aria-label="事前アンケート画面" class="ticket-round-icon" data-slide-target="1" type="button">
-<img alt="" src="images/footer_survey.png">
+<svg fill="none" viewBox="0 0 48 48">
+<line stroke-width="2" x1="18" x2="37" y1="15" y2="15"></line>
+<line stroke-width="2" x1="18" x2="37" y1="24" y2="24"></line>
+<line stroke-width="2" x1="18" x2="37" y1="33" y2="33"></line>
+<rect height="4" stroke-width="2" width="4" x="10" y="12"></rect>
+<rect height="4" stroke-width="2" width="4" x="10" y="21"></rect>
+<rect height="4" stroke-width="2" width="4" x="10" y="30"></rect>
+</svg>
 </button>
 <button aria-label="再分配画面" class="ticket-round-icon" data-slide-target="3" type="button">
-<img alt="" src="images/footer_redistribute.png">
+<svg fill="none" viewBox="0 0 48 48">
+<rect height="28" stroke-width="2" width="28" x="10" y="10"></rect>
+<line stroke-width="2" x1="17" x2="31" y1="17" y2="17"></line>
+<line stroke-width="2" x1="17" x2="34" y1="23" y2="23"></line>
+<line stroke-width="2" x1="17" x2="28" y1="29" y2="29"></line>
+</svg>
 </button>
 </nav>
 </div>
