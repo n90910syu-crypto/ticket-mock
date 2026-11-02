@@ -1677,6 +1677,236 @@ body.entry-loading-open {
 .ticket-clock-track {
   stroke: var(--ticket-clock-track, #7a7a7a);
 }
+/* =========================
+  チケット表示のフェード演出
+  本体は animateTicketDetail() で、写真・カード・アイコン・時計・×をいったん隠し、0.5秒後に表示し直す。
+  チケットを開いたときと、時計の丸を押して再表示したときに動く。
+========================= */
+.ticket-modal-wrap > * {
+  transition: opacity 0.3s ease;
+}
+
+.ticket-modal-overlay.is-fading .ticket-modal-wrap > * {
+  opacity: 0;
+  transition: none;
+}
+
+.ticket-clock {
+  cursor: pointer;
+}
+
+/* =========================================================
+  本物のCSS(application-*.css)の数値に合わせた上書き
+  スマホ幅(767px以下)の値。出どころは本物のCSSの .ticket__modal__* と .admission *
+========================================================= */
+
+/* 写真:本物は header の高さ260px(写真は cover)で、白いカードが上から180pxの位置から重なる。
+   写真の下半分は白いカードの下に隠れる。黒いグラデーション(.ticket__modal__header__shadow)が上にかかる */
+.ticket-modal-poster {
+  height: 260px;
+}
+
+.ticket-modal-poster::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 1;
+  background: linear-gradient(to bottom, transparent 50%, #000 100%);
+  opacity: 0.7;
+  pointer-events: none;
+}
+
+.ticket-card-stage {
+  margin-top: -80px;
+  border-radius: 14px;
+}
+
+.ticket-card-stage .ticket-sheet {
+  border-radius: 14px;
+}
+
+/* 時計の丸:74px、左上10px。背景は黒80%、外側に同色3pxの輪。回る輪は灰色3px、右の辺だけ白 */
+.ticket-clock {
+  top: 10px;
+  left: 10px;
+  z-index: 4;
+  width: 74px;
+  height: 74px;
+  background: var(--ticket-clock-bg, rgba(0, 0, 0, 0.8));
+  box-shadow: var(--ticket-clock-shadow, 0 0 0 3px rgba(0, 0, 0, 0.8));
+}
+
+.ticket-clock-loader {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 74px;
+  height: 74px;
+  border-radius: 50%;
+  background: transparent;
+  border: solid 3px var(--ticket-clock-track, gray);
+  border-right-color: #ffffff;
+  animation: ticketClockSpin 2s linear infinite;
+}
+
+.ticket-clock-container {
+  position: relative;
+  z-index: 1;
+}
+
+.ticket-clock-time {
+  font-size: 16px;
+  line-height: 16px;
+  font-weight: 400;
+  letter-spacing: 0;
+  color: #ffffff;
+}
+
+/* ×ボタン */
+.ticket-modal-close {
+  display: block;
+  width: 24px;
+  height: 24px;
+  border: solid 1px #cccccc;
+  border-radius: 12px;
+  color: #999999;
+  font-size: 20px;
+  font-weight: 100;
+  line-height: 20px;
+  padding: 0 0 0 5px;
+  overflow: hidden;
+  box-shadow: 0 0 3px 1px #11111166;
+  background: #ffffff;
+}
+
+/* チケット本体の文字:本物は 14px(題名16px太字、整理番号22px太字)、行の高さは 1.428571429 */
+.ticket-entry-button {
+  height: 50px;
+  border-radius: 4px;
+  border: 1px solid var(--ticket-color, #3399cc);
+  font-size: 14px;
+}
+
+.ticket-entry-button:not(.is-entered) {
+  background: var(--ticket-color, #3399cc);
+}
+
+.ticket-entry-button.is-entered {
+  background: #e63264;
+  border-color: #e63264;
+  font-size: 14px;
+  display: block;
+  padding: 6px 12px 6px 40px;
+  background-image: url(//d13rtcers002cb.cloudfront.net/assets/admitted_icon-775bbb2cfe2c49558380710566a470f2b2a2ad58d89bbbc285ac15d4849120c4.svg);
+  background-size: 20px;
+  background-position: 95px 14px;
+  background-repeat: no-repeat;
+}
+
+.ticket-entry-button.is-entered::before {
+  content: none;
+  display: none;
+}
+
+.ticket-main-info {
+  padding-top: 10px;
+}
+
+.ticket-event-name {
+  margin: 0;
+  font-size: 16px;
+  line-height: 1.428571429;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.ticket-type-row {
+  display: block;
+  gap: 0;
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.428571429;
+  font-weight: 400;
+}
+
+.ticket-seat {
+  margin: 0 0 5px;
+  padding-bottom: 5px;
+  border-bottom: 1px solid #cccccc;
+  font-size: 22px;
+  line-height: 1.428571429;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.ticket-divider {
+  display: none;
+}
+
+.ticket-organizer,
+.ticket-date-main,
+.ticket-open-time,
+.ticket-venue {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.428571429;
+  font-weight: 400;
+}
+
+/* 下の丸いボタン:48px、間隔5px、枠#ccc、影 0 0 3px 1px #ccc */
+.ticket-card-stage .ticket-bottom-icons {
+  bottom: 12px;
+  gap: 0;
+}
+
+.ticket-round-icon {
+  width: 48px;
+  height: 48px;
+  margin-right: 5px;
+  border: solid 1px #cccccc;
+  box-shadow: 0 0 3px 1px #cccccc;
+}
+
+/* 入場受付の確認ダイアログ:背景は黒80%、文字は14px、見出し18px。ボタンは14px */
+.entry-confirm-overlay {
+  background: rgba(0, 0, 0, 0.8);
+}
+
+.entry-confirm-title {
+  color: #3399cc;
+  font-size: 18px;
+}
+
+.entered-notice-title {
+  color: #e63264;
+  font-size: 18px;
+}
+
+.entry-confirm-text,
+.entered-notice-text {
+  font-size: 14px;
+  line-height: 1.428571429;
+  font-weight: 400;
+}
+
+.entry-confirm-complete {
+  background: #3399cc;
+  border-radius: 6px;
+  font-size: 14px;
+}
+
+.entry-confirm-cancel {
+  height: 44px;
+  border: solid 1px #808080;
+  border-radius: 6px;
+  color: #808080;
+  font-size: 14px;
+}
+
+.entered-notice-button {
+  color: #808080;
+  font-size: 14px;
+}
 </style>
 </head>
 <body class="">
@@ -1946,13 +2176,8 @@ body.entry-loading-open {
 <img src="images/thumbnail.jpg" alt="" id="modalEventImage">
 </div>
 <div class="ticket-clock">
-<svg aria-hidden="true" class="ticket-clock-ring" viewBox="0 0 100 100">
-<!-- 外周のグレーリング -->
-<circle class="ticket-clock-track" cx="50" cy="50" r="46"></circle>
-<!-- 1/4周の白い回転バー -->
-<circle class="ticket-clock-bar" cx="50" cy="50" r="46"></circle>
-</svg>
-<div class="ticket-clock-time" id="ticketClock">19:00</div>
+<div class="ticket-clock-loader"></div>
+<div class="ticket-clock-container"><div class="ticket-clock-time" id="ticketClock">19:00</div></div>
 </div>
 </div>
 <div class="ticket-card-stage">
@@ -1964,7 +2189,7 @@ body.entry-loading-open {
 <p class="ticket-event-name" id="modalEventName">キャラフルアイドルフェス</p>
 <div class="ticket-type-row">
 <span id="modalTicketType">前方エリア</span>
-<span>1枚</span>
+<span>　1枚</span>
 </div>
 <p class="ticket-seat" id="displayTicketSeat">S 111</p>
 <div class="ticket-divider"></div>
@@ -2127,7 +2352,8 @@ body.entry-loading-open {
     if (!ticketClock) return;
 
     const now = new Date();
-    const hour = now.getHours();
+    // 本体(updateCurrentTimer)と同じ「HH:MM」(0埋め)。例: 08:02
+    const hour = String(now.getHours()).padStart(2, '0');
     const minute = String(now.getMinutes()).padStart(2, '0');
     ticketClock.textContent = `${hour}:${minute}`;
   }
@@ -2160,6 +2386,17 @@ body.entry-loading-open {
     updateActiveIcon(safeIndex);
   }
 
+  // 本体の animateTicketDetail(): いったん隠して、0.5秒後に表示し直す
+  let fadeTimer = null;
+  function animateTicketDetail() {
+    if (!ticketModal) return;
+    ticketModal.classList.add('is-fading');
+    clearTimeout(fadeTimer);
+    fadeTimer = setTimeout(function () {
+      ticketModal.classList.remove('is-fading');
+    }, 500);
+  }
+
   function openTicketModal() {
     updateTicketClock();
 
@@ -2173,6 +2410,17 @@ body.entry-loading-open {
     // チケット表示ボタンから開いたときは1枚目を表示
     requestAnimationFrame(function () {
       goToSlide(0, false);
+    });
+    animateTicketDetail();
+  }
+
+  // 時計の丸を押すと、チケットを再表示する(本体の jsReShowTicket)。1枚目に戻り、フェードで表示し直す
+  const ticketClockCircle = document.querySelector('.ticket-clock');
+  if (ticketClockCircle) {
+    ticketClockCircle.addEventListener('click', function () {
+      updateTicketClock();
+      goToSlide(0, false);
+      animateTicketDetail();
     });
   }
 
