@@ -299,6 +299,10 @@
       保存
     </button>
 
+    <button type="button" class="btn" id="resetAdmitBtn" style="margin-top:10px;background:#fff;border:1px solid #e63264;color:#e63264;">
+      入場済みをリセット(もう一度もぎれる状態に戻す)
+    </button>
+
     <div class="link-area">
       <a href="homepage.html" class="btn link disabled" id="goLink">
         GO
@@ -745,7 +749,13 @@
     ticketColorPicker.addEventListener('input', function () { goLink.classList.add('disabled'); });
     showtimeNoDotCheck.addEventListener('change', function () { goLink.classList.add('disabled'); });
 
+    document.getElementById('resetAdmitBtn').addEventListener('click', function () {
+      try { localStorage.removeItem('tigetAdmitted'); } catch (e) {}
+      this.textContent = 'リセットしました';
+    });
+
     saveAllBtn.addEventListener('click', function () {
+      try { localStorage.removeItem('tigetAdmitted'); } catch (e) {}
       localStorage.setItem('tigetColor', currentTicketColor());
       localStorage.setItem('tigetShowtimeNoDot', showtimeNoDotCheck.checked ? '1' : '');
       localStorage.setItem('userInput', input.value.trim());

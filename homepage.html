@@ -1014,7 +1014,7 @@ body.entry-loading-open {
   opacity: 0;
   visibility: hidden;
   pointer-events: none;
-  transition: opacity 0.18s ease, visibility 0.18s ease;
+  transition: opacity 0.3s ease, visibility 0.3s ease;
 }
 
 .entry-loading-overlay.is-open {
@@ -1907,6 +1907,125 @@ body.entry-loading-open {
   color: #808080;
   font-size: 14px;
 }
+
+/* =========================================================
+  入場受付ダイアログの形:本物のCSSどおりのコンパクトな作り(bootstrapのmodal + .admission)
+  ・画面の端から10pxの位置、幅は画面幅-20px、高さは中身なり
+  ・中身:余白15px、見出し18px、本文14px、ボタンは幅200px(受付完了は高さ88px、他は44px)
+  ・×は右上ではなく、ダイアログの右端・上から45pxの位置(直径40px)
+  ・出方:上から(-25%)スライドして、0.3秒で定位置へ。背景は0.15秒でフェード
+========================================================= */
+.entry-confirm-overlay {
+  align-items: flex-start;
+  justify-content: center;
+  padding: 10px;
+  overflow-y: auto;
+  background: rgba(0, 0, 0, 0.8);
+  transition: opacity 0.15s linear, visibility 0.15s linear;
+}
+
+.entry-confirm-overlay .entry-confirm-box {
+  display: block;
+  width: 100%;
+  max-width: none;
+  height: auto;
+  min-height: 0;
+  max-height: none;
+  margin: 0 0 10px;
+  padding: 15px;
+  border-radius: 5px;
+  text-align: center;
+  opacity: 1;
+  transform: translateY(-25%);
+  transition: transform 0.3s ease-out;
+}
+
+.entry-confirm-overlay.is-open .entry-confirm-box {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.entry-confirm-overlay .entry-confirm-title,
+.entry-confirm-overlay .entered-notice-title {
+  margin: 10px 0 20px;
+  font-size: 18px;
+  line-height: 1.428571429;
+  font-weight: 700;
+  text-align: center;
+}
+
+.entry-confirm-overlay .entry-confirm-text,
+.entry-confirm-overlay .entered-notice-text {
+  margin: 0 0 30px;
+  font-size: 14px;
+  line-height: 1.428571429;
+  font-weight: 400;
+  text-align: center;
+}
+
+.entry-confirm-overlay .entry-confirm-complete,
+.entry-confirm-overlay .entry-confirm-cancel,
+.entry-confirm-overlay .entered-notice-button {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 200px;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0;
+  border-radius: 6px;
+  font-size: 14px;
+  line-height: 42px;
+}
+
+.entry-confirm-overlay .entry-confirm-complete {
+  height: 88px;
+  border: solid 1px #3399cc;
+  background: #3399cc;
+  color: #ffffff;
+}
+
+.entry-confirm-overlay .entry-confirm-cancel {
+  height: 44px;
+  margin-top: 10px;
+  border: solid 1px #808080;
+  background: transparent;
+  color: #808080;
+}
+
+.entry-confirm-overlay .entered-notice-button {
+  height: 44px;
+  min-width: 0;
+  margin-top: 0;
+  border: none;
+  background: transparent;
+  color: #808080;
+}
+
+/* ×ボタン: 直径40px、右端・上から45px */
+.entry-confirm-overlay .entry-confirm-close {
+  top: 45px;
+  right: 0;
+  display: block;
+  width: 40px;
+  height: 40px;
+  border: solid 1px #cccccc;
+  border-radius: 20px;
+  background: #ffffff;
+  box-shadow: 0 0 3px 1px #11111166;
+  color: #999999;
+  font-size: 36px;
+  font-weight: 100;
+  line-height: 32px;
+  padding: 0 0 0 9px;
+  overflow: hidden;
+  z-index: 10002;
+}
+
+/* フッターアイコン:本物のPNG画像を使用 */
+.ticket-round-icon { display:flex; align-items:center; justify-content:center; background:#fff; border-radius:50%; }
+.ticket-round-icon img { width:30px; height:30px; display:block; }
+.ticket-round-icon img[src$="redistribute.png"] { width:23px; height:15px; }
 </style>
 </head>
 <body class="">
@@ -2255,37 +2374,16 @@ body.entry-loading-open {
 <!-- 固定アイコン：スライドしても位置は変わらない -->
 <nav aria-label="チケット情報の切り替え" class="ticket-bottom-icons">
 <button aria-label="チケット画面" class="ticket-round-icon is-active" data-slide-target="0" type="button">
-<svg fill="none" viewBox="0 0 48 48">
-<rect height="22" stroke-width="2" width="32" x="8" y="13"></rect>
-<line stroke-width="2" x1="15" x2="26" y1="20" y2="20"></line>
-<line stroke-width="2" x1="15" x2="32" y1="26" y2="26"></line>
-</svg>
+<img alt="" src="images/footer_ticket.png">
 </button>
 <button aria-label="リセール画面" class="ticket-round-icon" data-slide-target="2" type="button">
-<svg fill="none" viewBox="0 0 48 48">
-<path d="M15 18C18 12 26 10 32 14C34 15 36 17 37 20" stroke-linecap="round" stroke-width="2"></path>
-<path d="M37 14V20H31" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-<path d="M33 30C30 36 22 38 16 34C14 33 12 31 11 28" stroke-linecap="round" stroke-width="2"></path>
-<path d="M11 34V28H17" stroke-linecap="round" stroke-linejoin="round" stroke-width="2"></path>
-</svg>
+<img alt="" src="images/footer_resale.png">
 </button>
 <button aria-label="事前アンケート画面" class="ticket-round-icon" data-slide-target="1" type="button">
-<svg fill="none" viewBox="0 0 48 48">
-<line stroke-width="2" x1="18" x2="37" y1="15" y2="15"></line>
-<line stroke-width="2" x1="18" x2="37" y1="24" y2="24"></line>
-<line stroke-width="2" x1="18" x2="37" y1="33" y2="33"></line>
-<rect height="4" stroke-width="2" width="4" x="10" y="12"></rect>
-<rect height="4" stroke-width="2" width="4" x="10" y="21"></rect>
-<rect height="4" stroke-width="2" width="4" x="10" y="30"></rect>
-</svg>
+<img alt="" src="images/footer_survey.png">
 </button>
 <button aria-label="再分配画面" class="ticket-round-icon" data-slide-target="3" type="button">
-<svg fill="none" viewBox="0 0 48 48">
-<rect height="28" stroke-width="2" width="28" x="10" y="10"></rect>
-<line stroke-width="2" x1="17" x2="31" y1="17" y2="17"></line>
-<line stroke-width="2" x1="17" x2="34" y1="23" y2="23"></line>
-<line stroke-width="2" x1="17" x2="28" y1="29" y2="29"></line>
-</svg>
+<img alt="" src="images/footer_redistribute.png">
 </button>
 </nav>
 </div>
@@ -2395,6 +2493,12 @@ body.entry-loading-open {
     fadeTimer = setTimeout(function () {
       ticketModal.classList.remove('is-fading');
     }, 500);
+  }
+
+  function applyAdmittedState() {
+    if (!entryButton) return;
+    entryButton.classList.add('is-entered');
+    entryButton.textContent = '入場済み';
   }
 
   function openTicketModal() {
@@ -2544,6 +2648,11 @@ body.entry-loading-open {
     goToSlide(currentSlide, false);
   });
 
+  // 入場済みは本体ではサーバー側(admission)に保存される。ここではブラウザに保存して、開き直しても残す
+  try {
+    if (localStorage.getItem('tigetAdmitted') === '1') applyAdmittedState();
+  } catch (e) {}
+
   if (openTicketButton) {
     openTicketButton.addEventListener('click', openTicketModal);
   }
@@ -2568,31 +2677,14 @@ body.entry-loading-open {
     entryCompleteButton.addEventListener('click', function () {
       showEntryLoading();
 
+      // 通信(PUT admission_accept)の待ち時間のつもり。終わったらスピナーを0.3秒でフェードアウトし、
+      // チケットを取得し直して表示する(本体の callback → showTicket)
       setTimeout(function () {
         hideEntryLoading();
-
-        if (entryButton) {
-          entryButton.classList.add('is-entered');
-          entryButton.textContent = '入場済み';
-        }
-
-        if (ticketModal) {
-          ticketModal.classList.add('is-open');
-          ticketModal.classList.add('is-slide-up');
-        }
-
-        document.body.classList.add('ticket-modal-open');
-
-        requestAnimationFrame(function () {
-          goToSlide(0, false);
-        });
-
-        setTimeout(function () {
-          if (ticketModal) {
-            ticketModal.classList.remove('is-slide-up');
-          }
-        }, 450);
-      }, 1000);
+        try { localStorage.setItem('tigetAdmitted', '1'); } catch (e) {}
+        applyAdmittedState();
+        openTicketModal();
+      }, 700);
     });
   }
 
