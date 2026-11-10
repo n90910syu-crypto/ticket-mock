@@ -2022,6 +2022,83 @@ body.entry-loading-open {
   z-index: 10002;
 }
 
+
+/* =========================================================
+  QR入場モード(本物のCSSの値):QR 120×120、白、角丸8px、カードの上端から-60pxで中央に重なる
+  ・入場受付ボタンは出さない / 入場済みのときはQRの上にチェック画像(白70%の膜)が重なる
+  ・拡大アイコンはQRの右横(カード上端から30px)。押すとQRが全画面で拡大され、タップで閉じる
+========================================================= */
+.ticket-qr {
+  position: absolute;
+  left: 0;
+  right: 0;
+  z-index: 6;
+  height: 0;
+  pointer-events: none;
+}
+.ticket-qr[hidden] { display: none; }
+.ticket-qr-box {
+  position: absolute;
+  left: 50%;
+  top: 0;
+  width: 120px;
+  height: 120px;
+  margin-left: -60px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: #ffffff;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.ticket-qr-box svg { display: block; width: 100%; height: 100%; }
+.ticket-qr-check {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  padding: 38px;
+  object-fit: contain;
+  background-color: #ffffffb3;
+  display: none;
+}
+.ticket-qr.is-admitted .ticket-qr-check { display: block; }
+.ticket-qr-zoom {
+  position: absolute;
+  left: 50%;
+  top: 180px; /* JSで カード上端+30px に合わせる */
+  margin-left: 66px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #555555;
+  pointer-events: auto;
+  cursor: pointer;
+}
+.ticket-qr-zoom svg { display: block; width: 20px; height: 20px; }
+.ticket-qr.is-admitted .ticket-qr-zoom { display: none; }
+
+/* QRモードのカード:ボタンの分を詰めて、QRの下半分(60px)の分だけ内容を下げる */
+.ticket-card-stage.is-qr .ticket-entry-button { display: none; }
+.ticket-card-stage.is-qr .ticket-main-slide .ticket-sheet { padding-top: 70px; }
+
+.ticket-zoom-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 10010;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0, 0, 0, 0.8);
+}
+.ticket-zoom-overlay.is-open { display: flex; }
+.ticket-zoom-overlay .ticket-zoom-image {
+  width: min(86vw, 360px);
+  height: min(86vw, 360px);
+  background: #ffffff;
+  border-radius: 8px;
+  padding: 8px;
+}
+.ticket-zoom-overlay svg { display: block; width: 100%; height: 100%; }
 </style>
 </head>
 <body class="">
@@ -2295,6 +2372,11 @@ body.entry-loading-open {
 <div class="ticket-clock-container"><div class="ticket-clock-time" id="ticketClock">19:00</div></div>
 </div>
 </div>
+<div class="ticket-qr" id="ticketQr" hidden>
+<div class="ticket-qr-box" id="ticketQrBox"><div id="ticketQrArea"></div><img class="ticket-qr-check" alt="" src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAFgAAABYCAYAAABxlTA0AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAxlJREFUeNrsnd9t2zAQxuV2AXUDdYJ4jL5FI2iD+LVPyQYagd2AI7gbqJ1A3kB5bJ8UEpAF2aH+2OaRPPI74IMNBIqNXy6nI+903GXhWKG0H/SklA/v85Xr3pX+DK9/h/dapyxx0+AqJaHUKvWW1Q6/u9rwR4oOqiQAuiYZM2z9718rdR7AXqsbvksRC1gRANQ5Ca6g88DBmkCzCR2HQELBPaHjEHo4ODIEe61jiGGjZOq1S95chQK3jgjstWrfN7JjxHCnISP3AbdJAO5ZjUvIqcF1CjlVuE4gpw6XHPIRcC9ufEjFuKRwFWDOqrSx/O0AcnHFVyDuBhqPD4C3WbO7cLuFlKxNqZb1oOmC6/fh9cK+LGQNgHvbGqHe6sHF4L2w20178WnNg1/B6W57XfNgeK9lL7724Bfwedhe5jwYmQNBRjH14BJwrWUUpSlEPKdGYr/fZ1LKLM+t+9WziXpSqy8Ft++6rtcmhKD4jDzZHbMp3KZpeuXBFJ9TTQELwCVpxxqtBVyS/uRxcQG4NCrO6RngElY83gCXTJqtl3b+FOCeH1uIsywUANyxnNQBLmlRFHCJBbgAzBcuLeCqqlKHSwe4rmvKnSoucOkAO9gO5ACXNkRQQmYCl/4mRwGZEdzeyULDJmRmcDtnS2UbkJnBHZfK0keueitkhnDHzZ43XwuCrZCZwh23K0ufq641yIzhjhvuhe+l7Rxk5nDHkpG3oucS5AjgtkGU7U2QI4D7qWzvtfFkClRKGQPcT40n3lunppAjgNubGillKJAjgCtNHYFB9KdpyMzhXoQHNGDTNGB/M/UH6x/8Ap+H7YIhHoKxb4sPwZzgxQ9772nJg+HFFr3X5MHwYoveO+fByCjuyxyMD4N/nbngn9J/pR9gt8l+Kv2+50IM5CAekFRkGClDOlLGS8WDW8XChmGsl4PJrIjHhIPpzqkbRitifiUmsAIuIPuFO4WMEeMODEPyHRiOeXBgRYaDSpwYjtpxdAPkNEVFcN37LjIcd+YMNA7scxQ69N0ZR046hC2yiA9N3QUWRqI79vdDgAEAJu8aZxpFfJ4AAAAASUVORK5CYII="></div>
+<div class="ticket-qr-zoom" id="ticketQrZoom" aria-label="QRコードを拡大"><svg viewBox="0 0 20 20"><circle cx="9" cy="9" r="3.8" fill="none" stroke="#fff" stroke-width="1.4"/><path d="M12 12l3.4 3.4" stroke="#fff" stroke-width="1.6" stroke-linecap="round"/></svg></div>
+</div>
+<div class="ticket-zoom-overlay" id="ticketZoomOverlay"><div class="ticket-zoom-image" id="ticketZoomImage"></div></div>
 <div class="ticket-card-stage">
 <div class="ticket-slider" id="ticketSlider">
 <!-- 1枚目：チケット表示 / 入場受付・入場済み -->
@@ -2440,6 +2522,20 @@ body.entry-loading-open {
 <div class="entry-loading-spinner"></div>
 </div>
 <script>
+/* もぎった後の時計の丸の色(試験機能。本物は変わらない)。不要なら、この<script>と、applyAdmittedClockColor の呼び出しを削除 */
+window.applyAdmittedClockColor = function () {
+  try {
+    var c = (localStorage.getItem('tigetAdmittedClockColor') || '').trim();
+    var admitted = localStorage.getItem('tigetAdmitted') === '1';
+    if (!admitted || !/^#([0-9a-f]{3}|[0-9a-f]{6})$/i.test(c)) return;
+    var r = document.documentElement.style;
+    r.setProperty('--ticket-clock-bg', c);
+    r.setProperty('--ticket-clock-shadow', '0 0 0 3px ' + c);
+    r.setProperty('--ticket-clock-track', c);
+  } catch (e) {}
+};
+</script>
+<script>
   const ticketModal = document.getElementById('ticketModal');
   const openTicketButton = document.querySelector('.ticket-display-button');
   const closeTicketButton = document.getElementById('closeTicketModal');
@@ -2516,6 +2612,7 @@ body.entry-loading-open {
     if (!entryButton) return;
     entryButton.classList.add('is-entered');
     entryButton.textContent = '入場済み';
+    if (window.applyAdmittedClockColor) window.applyAdmittedClockColor();
   }
 
   function openTicketModal() {
@@ -2813,6 +2910,7 @@ body.entry-loading-open {
       root.setProperty('--ticket-clock-shadow', '0 0 0 3px ' + tigetColor);
       root.setProperty('--ticket-clock-track', tigetColor);
     }
+    if (window.applyAdmittedClockColor) window.applyAdmittedClockColor();
 
     if (eventTicketType && eventTicketType.trim() !== '' && modalTicketType) {
       modalTicketType.textContent = eventTicketType;
@@ -2838,6 +2936,75 @@ setInterval(updateTicketClock, 1000);
 reflectSavedTicketNumber();
 reflectSavedProfile();
 reflectSavedEvent();
+</script>
+
+<script>
+/* QR入場モード(index.html の「もぎり方式」でQRを選ぶと有効)。見た目だけの再現で、読み取りはできません */
+(function () {
+  var mode = 'tap', admitted = false;
+  try { mode = localStorage.getItem('tigetAdmissionMode') || 'tap'; admitted = localStorage.getItem('tigetAdmitted') === '1'; } catch (e) {}
+  if (mode !== 'qr') return;
+
+  var qr = document.getElementById('ticketQr');
+  var area = document.getElementById('ticketQrArea');
+  var stage = document.querySelector('.ticket-card-stage');
+  var slider = document.getElementById('ticketSlider');
+  var zoomBtn = document.getElementById('ticketQrZoom');
+  var box = document.getElementById('ticketQrBox');
+  var overlay = document.getElementById('ticketZoomOverlay');
+  var zoomImage = document.getElementById('ticketZoomImage');
+  if (!qr || !stage) return;
+
+  function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+
+  function makeQrSvg(seedText) {
+    var n = 29, q = 2, r = rng(hash(seedText)), g = [], x, y;
+    for (y = 0; y < n; y++) { g[y] = []; for (x = 0; x < n; x++) g[y][x] = r() < 0.5; }
+    function finder(ox, oy) {
+      for (var j = -1; j <= 7; j++) for (var i = -1; i <= 7; i++) {
+        var xx = ox + i, yy = oy + j; if (xx < 0 || yy < 0 || xx >= n || yy >= n) continue;
+        var on = i >= 0 && i <= 6 && j >= 0 && j <= 6 && (i === 0 || i === 6 || j === 0 || j === 6 || (i >= 2 && i <= 4 && j >= 2 && j <= 4));
+        g[yy][xx] = on;
+      }
+    }
+    finder(0, 0); finder(n - 7, 0); finder(0, n - 7);
+    for (var k = 8; k < n - 8; k++) { g[6][k] = k % 2 === 0; g[k][6] = k % 2 === 0; }
+    var d = '';
+    for (y = 0; y < n; y++) for (x = 0; x < n; x++) if (g[y][x]) d += 'M' + (x + q) + ' ' + (y + q) + 'h1v1h-1z';
+    var size = n + q * 2;
+    return '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 ' + size + ' ' + size + '" shape-rendering="crispEdges"><rect width="' + size + '" height="' + size + '" fill="#fff"/><path d="' + d + '" fill="#000"/></svg>';
+  }
+
+  function place() {
+    // QRはカード上端から-60px、拡大アイコンは+30px(本物のCSSの値)
+    qr.style.top = (stage.offsetTop - 60) + 'px';
+    zoomBtn.style.top = '90px';
+  }
+
+  function apply() {
+    var seat = (document.getElementById('displayTicketSeat') || {}).textContent || '';
+    var title = (document.getElementById('modalEventName') || {}).textContent || '';
+    area.innerHTML = makeQrSvg(title + '|' + seat);
+    stage.classList.add('is-qr');
+    qr.hidden = false;
+    qr.classList.toggle('is-admitted', admitted);
+    place();
+  }
+
+  function openZoom() { zoomImage.innerHTML = makeQrSvg(((document.getElementById('modalEventName') || {}).textContent || '') + '|' + ((document.getElementById('displayTicketSeat') || {}).textContent || '')); overlay.classList.add('is-open'); }
+  zoomBtn.addEventListener('click', openZoom);
+  box.addEventListener('click', openZoom);
+  overlay.addEventListener('click', function () { overlay.classList.remove('is-open'); });
+
+  // カードをスワイプしたらQRも一緒に動く(本物はQRが1枚目のカードの中にあるため)
+  if (slider) slider.addEventListener('scroll', function () { qr.style.transform = 'translateX(' + (-slider.scrollLeft) + 'px)'; }, { passive: true });
+  window.addEventListener('resize', place);
+  var modal = document.getElementById('ticketModal');
+  if (modal) new MutationObserver(function () { place(); }).observe(modal, { attributes: true, attributeFilter: ['class'] });
+
+  apply();
+})();
 </script>
 
 </body></html>

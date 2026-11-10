@@ -269,6 +269,15 @@
     <label for="eventVenueMapInput" style="margin-top:16px;">地図URL(任意)</label>
     <input id="eventVenueMapInput" type="text" placeholder="自動取得 or 手入力(なくても可)">
 
+    <label for="admissionModeSelect" style="margin-top:16px;">もぎり方式</label>
+    <select id="admissionModeSelect" style="margin-bottom:8px;">
+      <option value="tap">タップ(自分で「入場受付」ボタンを押す)</option>
+      <option value="qr">QR(スタッフがQRコードを読み取る。ボタンなし)</option>
+    </select>
+    <button type="button" class="btn" id="markAdmittedBtn" style="margin-top:4px;background:#fff;border:1px solid #3399cc;color:#3399cc;">
+      もぎり済みにする(QRを読み取られた状態の再現)
+    </button>
+
     <label for="ticketColorSelect" style="margin-top:16px;">チケット画面の色(入場受付ボタンと上の時計の丸)</label>
     <select id="ticketColorSelect" style="margin-bottom:8px;">
       <option value="">標準(青)</option>
@@ -283,6 +292,14 @@
       <option value="custom">自由に選ぶ…</option>
     </select>
     <input id="ticketColorPicker" type="color" value="#1cb804" style="height:40px; padding:2px; display:none;">
+
+    <label for="admClockSelect" style="margin-top:16px;">もぎった後の時計の丸の色(試験機能・不要なら削除)</label>
+    <select id="admClockSelect" style="margin-bottom:8px;">
+      <option value="">変えない(本物どおり)</option>
+      <option value="#1cb804">緑</option><option value="#e5265c">赤</option><option value="#ff8c00">オレンジ</option><option value="#f2c200">黄</option><option value="#17b8d4">水色</option><option value="#8a4fd8">紫</option><option value="#ff5fa2">ピンク</option><option value="#333333">黒</option><option value="#3399cc">青</option>
+      <option value="custom">自由に選ぶ…</option>
+    </select>
+    <input id="admClockPicker" type="color" value="#e63264" style="height:40px; padding:2px; display:none;">
 
     <label style="margin-top:16px; display:flex; align-items:center; gap:8px; font-weight:normal;">
       <input id="showtimeNoDotCheck" type="checkbox" style="width:auto;">
@@ -754,7 +771,25 @@
       this.textContent = 'リセットしました';
     });
 
+    const admissionModeSelect = document.getElementById('admissionModeSelect');
+    try { admissionModeSelect.value = localStorage.getItem('tigetAdmissionMode') || 'tap'; } catch (e) {}
+    admissionModeSelect.addEventListener('change', function () { goLink.classList.add('disabled'); });
+    document.getElementById('markAdmittedBtn').addEventListener('click', function () {
+      try { localStorage.setItem('tigetAdmitted', '1'); } catch (e) {}
+      this.textContent = 'もぎり済みにしました(マイページを開き直すと反映)';
+    });
+
+    const admClockSelect = document.getElementById('admClockSelect');
+    const admClockPicker = document.getElementById('admClockPicker');
+    admClockSelect.addEventListener('change', function () {
+      admClockPicker.style.display = admClockSelect.value === 'custom' ? 'block' : 'none';
+      goLink.classList.add('disabled');
+    });
+    admClockPicker.addEventListener('input', function () { goLink.classList.add('disabled'); });
+
     saveAllBtn.addEventListener('click', function () {
+      localStorage.setItem('tigetAdmissionMode', admissionModeSelect.value);
+      localStorage.setItem('tigetAdmittedClockColor', admClockSelect.value === 'custom' ? admClockPicker.value : admClockSelect.value);
       try { localStorage.removeItem('tigetAdmitted'); } catch (e) {}
       localStorage.setItem('tigetColor', currentTicketColor());
       localStorage.setItem('tigetShowtimeNoDot', showtimeNoDotCheck.checked ? '1' : '');
