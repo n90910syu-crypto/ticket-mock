@@ -274,9 +274,11 @@
       <option value="tap">タップ(自分で「入場受付」ボタンを押す)</option>
       <option value="qr">QR(スタッフがQRコードを読み取る。ボタンなし)</option>
     </select>
-    <button type="button" class="btn" id="markAdmittedBtn" style="margin-top:4px;background:#fff;border:1px solid #3399cc;color:#3399cc;">
-      もぎり済みにする(QRを読み取られた状態の再現)
-    </button>
+    <label for="admittedSelect" style="margin-top:8px;">もぎり前 / もぎり後</label>
+    <select id="admittedSelect" style="margin-bottom:8px;">
+      <option value="0">もぎり前</option>
+      <option value="1">もぎり後(入場済み)</option>
+    </select>
 
     <label for="ticketColorSelect" style="margin-top:16px;">チケット画面の色(入場受付ボタンと上の時計の丸)</label>
     <select id="ticketColorSelect" style="margin-bottom:8px;">
@@ -316,9 +318,6 @@
       保存
     </button>
 
-    <button type="button" class="btn" id="resetAdmitBtn" style="margin-top:10px;background:#fff;border:1px solid #e63264;color:#e63264;">
-      入場済みをリセット(もう一度もぎれる状態に戻す)
-    </button>
 
     <div class="link-area">
       <a href="homepage.html" class="btn link disabled" id="goLink">
@@ -766,18 +765,21 @@
     ticketColorPicker.addEventListener('input', function () { goLink.classList.add('disabled'); });
     showtimeNoDotCheck.addEventListener('change', function () { goLink.classList.add('disabled'); });
 
-    document.getElementById('resetAdmitBtn').addEventListener('click', function () {
-      try { localStorage.removeItem('tigetAdmitted'); } catch (e) {}
-      this.textContent = 'リセットしました';
-    });
-
     const admissionModeSelect = document.getElementById('admissionModeSelect');
     try { admissionModeSelect.value = localStorage.getItem('tigetAdmissionMode') || 'tap'; } catch (e) {}
     admissionModeSelect.addEventListener('change', function () { goLink.classList.add('disabled'); });
-    document.getElementById('markAdmittedBtn').addEventListener('click', function () {
-      try { localStorage.setItem('tigetAdmitted', '1'); } catch (e) {}
-      this.textContent = 'もぎり済みにしました(マイページを開き直すと反映)';
-    });
+    const admittedSelect = document.getElementById('admittedSelect');
+    try { admittedSelect.value = localStorage.getItem('tigetAdmitted') === '1' ? '1' : '0'; } catch (e) {}
+    let admittedTouched = false;
+    admittedSelect.addEventListener('change', function () { admittedTouched = true; goLink.classList.add('disabled'); });
+    // マイページでもぎった結果を、戻ってきたときに選択へ反映する(自分で選び直している間は触らない)
+    function syncAdmittedSelect() {
+      if (admittedTouched) return;
+      try { admittedSelect.value = localStorage.getItem('tigetAdmitted') === '1' ? '1' : '0'; } catch (e) {}
+    }
+    window.addEventListener('focus', syncAdmittedSelect);
+    window.addEventListener('pageshow', syncAdmittedSelect);
+    document.addEventListener('visibilitychange', syncAdmittedSelect);
 
     const admClockSelect = document.getElementById('admClockSelect');
     const admClockPicker = document.getElementById('admClockPicker');
@@ -789,8 +791,10 @@
 
     saveAllBtn.addEventListener('click', function () {
       localStorage.setItem('tigetAdmissionMode', admissionModeSelect.value);
+      // 自分で選び直したときだけ書き換える(マイページでもぎった状態を、保存で消さないため)
+      if (admittedTouched) localStorage.setItem('tigetAdmitted', admittedSelect.value === '1' ? '1' : '');
+      admittedTouched = false;
       localStorage.setItem('tigetAdmittedClockColor', admClockSelect.value === 'custom' ? admClockPicker.value : admClockSelect.value);
-      try { localStorage.removeItem('tigetAdmitted'); } catch (e) {}
       localStorage.setItem('tigetColor', currentTicketColor());
       localStorage.setItem('tigetShowtimeNoDot', showtimeNoDotCheck.checked ? '1' : '');
       localStorage.setItem('userInput', input.value.trim());
