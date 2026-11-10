@@ -2077,6 +2077,7 @@ body.entry-loading-open {
 }
 .ticket-qr-zoom svg { display: block; width: 20px; height: 20px; }
 .ticket-qr.is-admitted .ticket-qr-zoom { display: none; }
+.ticket-qr.is-admitted .ticket-qr-box { cursor: default; }
 
 /* QRモードのカード:ボタンの分を詰めて、QRの下半分(60px)の分だけ内容を下げる */
 .ticket-card-stage.is-qr .ticket-entry-button { display: none; }
@@ -2997,7 +2998,8 @@ reflectSavedEvent();
     place();
   }
 
-  function openZoom() { zoomImage.innerHTML = makeQrSvg(((document.getElementById('modalEventName') || {}).textContent || '') + '|' + ((document.getElementById('displayTicketSeat') || {}).textContent || '')); overlay.classList.add('is-open'); }
+  // 本物は、もぎった後はQRを拡大できない(拡大アイコンも出ない)
+  function openZoom() { if (admitted) return; zoomImage.innerHTML = makeQrSvg(((document.getElementById('modalEventName') || {}).textContent || '') + '|' + ((document.getElementById('displayTicketSeat') || {}).textContent || '')); overlay.classList.add('is-open'); }
   zoomBtn.addEventListener('click', openZoom);
   box.addEventListener('click', openZoom);
   overlay.addEventListener('click', function () { overlay.classList.remove('is-open'); });
