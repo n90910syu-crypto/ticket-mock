@@ -705,12 +705,37 @@
           }
         }
 
-        const ticketNameEls = doc.querySelectorAll('.c-ordering-btn__content__name');
-        const ticketNames = Array.from(ticketNameEls)
-          .map(extractLeadingText)
+        // チケット名の取り方(ページの作りが複数あるため、順に試す)
+        //   1) .c-ordering-ticket-name(購入済みなどの作り)
+        //   2) .c-ordering-btn__content__name から、日付の欄(.play-date-label)と金額を除いた先頭の文字
+        //   3) 上で取れない/日付や金額になってしまうときは、#event-ticket の見出し(h6)の中のチケット名
+        function looksLikeNotName(t) {
+          return !t || /^\d{4}年/.test(t) || /開場/.test(t) && /\d{1,2}:\d{2}/.test(t) || /^[\d,]+\s*円/.test(t) || /円$/.test(t) && /\d{1,2}:\d{2}/.test(t);
+        }
+        function ticketNameOf(btn) {
+          const direct = btn.querySelector('.c-ordering-ticket-name');
+          if (direct) {
+            const t = direct.textContent.replace(/\s+/g, ' ').trim();
+            if (!looksLikeNotName(t)) return t;
+          }
+          const el = btn.querySelector('.c-ordering-btn__content__name');
+          if (el) {
+            const clone = el.cloneNode(true);
+            clone.querySelectorAll('.play-date-label, .c-ordering-ticket-date, .c-ordering-ticket-price').forEach(function (x) { x.remove(); });
+            const t = extractLeadingText(clone).replace(/\s+/g, ' ').trim();
+            if (!looksLikeNotName(t)) return t;
+          }
+          return '';
+        }
+        let ticketNames = Array.from(doc.querySelectorAll('.c-ordering-btn'))
+          .map(ticketNameOf)
           .filter(function (t, idx, arr) {
             return t && arr.indexOf(t) === idx; // 重複除去
           });
+        if (ticketNames.length === 0) {
+          ticketNames = Object.keys(ticketShowtimeMap)
+            .filter(function (k) { return k.charAt(0) !== '\u0000' && !looksLikeNotName(k); });
+        }
 
         ticketTypeSelect.innerHTML = '<option value="">-- 候補から選ぶ --</option>';
         ticketNames.forEach(function (name) {
