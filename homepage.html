@@ -2076,6 +2076,8 @@ body.entry-loading-open {
   cursor: pointer;
 }
 .ticket-qr-zoom svg { display: block; width: 20px; height: 20px; }
+/* 本物は虫眼鏡のマークを出さない(QRを押すと拡大される) */
+.ticket-qr-zoom { display: none !important; }
 .ticket-qr.is-admitted .ticket-qr-zoom { display: none; }
 .ticket-qr.is-admitted .ticket-qr-box { cursor: default; }
 
