@@ -2101,6 +2101,23 @@ body.entry-loading-open {
   padding: 0;
 }
 .ticket-zoom-overlay svg { display: block; width: 100%; height: 100%; }
+
+/* ×ボタン:カード(写真)の右上の内側におさめる。丸の大きさ・枠・影・×の線は本物の値(24px、枠#ccc、影、10pxの×) */
+.ticket-modal-wrap .ticket-modal-close {
+  position: absolute;
+  top: 30px;
+  right: 32px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  padding: 0;
+  line-height: 1;
+  overflow: hidden;
+}
+.ticket-modal-close svg { display: block; }
 </style>
 </head>
 <body class="">
@@ -2364,7 +2381,7 @@ body.entry-loading-open {
 </div>
 <div class="ticket-modal-overlay" id="ticketModal">
 <div class="ticket-modal-wrap">
-<button class="ticket-modal-close" id="closeTicketModal" type="button">×</button>
+<button class="ticket-modal-close" id="closeTicketModal" type="button" aria-label="閉じる"><svg aria-hidden="true" height="10" viewBox="0 0 10 10" width="10"><path d="M1 1 L9 9 M9 1 L1 9" fill="none" stroke="currentColor" stroke-width="1"></path></svg></button>
 <div class="ticket-modal-poster">
 <div class="image-slot">
 <img src="images/thumbnail.jpg" alt="" id="modalEventImage">
