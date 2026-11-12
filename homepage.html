@@ -1,5 +1,30 @@
 <!DOCTYPE html>
 <html lang="ja"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+<script>
+/* 共有リンク対応:URLが「#share=…」付きなら、その内容をこの端末に取り込む(index.html は不要)。
+   同じリンクを開き直しても、もぎった状態は消さない。リンクが変わったときだけ入れ替えて、もぎり前から始める */
+(function () {
+  try {
+    var m = /^#share=([A-Za-z0-9_-]+)$/.exec(location.hash);
+    if (!m) return;
+    var raw = m[1].replace(/-/g, '+').replace(/_/g, '/');
+    while (raw.length % 4) raw += '=';
+    var bin = atob(raw), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    var text = new TextDecoder().decode(bytes);
+    var data = JSON.parse(text);
+    var id = String(text.length) + ':' + (function (s) { var h = 5381; for (var j = 0; j < s.length; j++) h = ((h << 5) + h + s.charCodeAt(j)) | 0; return h; })(text);
+    if (localStorage.getItem('tigetShareId') !== id) {
+      var keys = ["userInput", "userName", "userGroup", "userPhone", "userAddress", "eventTitle", "eventDate", "eventShowtime", "eventImage", "eventVenue", "eventVenueMapUrl", "eventTicketType", "tigetColor", "tigetShowtimeNoDot", "tigetAdmissionMode", "tigetAdmittedClockColor"];
+      keys.forEach(function (k) { if (data[k] != null) localStorage.setItem(k, data[k]); else localStorage.removeItem(k); });
+      localStorage.setItem('tigetAdmitted', data.initialAdmitted === '1' ? '1' : '');
+      localStorage.setItem('tigetShareId', id);
+    }
+    history.replaceState(null, '', location.pathname + location.search); // 住所欄から内容を消す
+  } catch (e) {}
+})();
+</script>
+
 
 <meta content="width=device-width, initial-scale=1, viewport-fit=cover" name="viewport">
 <title>TIGET My Page Mock</title>
