@@ -183,7 +183,14 @@
 </head>
 
 <body>
-  <div class="box">
+  <div id="lockScreen" class="box" style="text-align:center;">
+    <h2 style="margin-top:0;">パスワードを入力してください</h2>
+    <input id="lockPassword" type="password" placeholder="パスワード" autocomplete="off" style="text-align:center;">
+    <p id="lockMessage" style="color:#e53935; min-height:20px; margin:8px 0;"></p>
+    <button id="lockButton" class="btn" type="button">開く</button>
+  </div>
+
+  <div id="mainBox" class="box" style="display:none;">
 
     <label for="userInput">整理番号</label>
 
@@ -891,6 +898,57 @@
     try { navigator.clipboard.writeText(box.value).then(function () { copyBtn.textContent = 'コピーしました'; }); }
     catch (e) { document.execCommand('copy'); copyBtn.textContent = 'コピーしました'; }
   });
+})();
+</script>
+<script>
+(function () {
+  // パスワードの文字そのものではなく、SHA-256というハッシュ値(元に戻せない変換後の文字列)だけを持つ。
+  // 入力された文字を同じ方法で変換し、このハッシュ値と一致するかどうかだけを見て判定する。
+  var PASSWORD_HASH = '02df6b5552f3fa903a1007f7e499416eebb40a09111fcd6224071925239360a7';
+  var STORAGE_KEY = 'tigetIndexUnlocked';
+
+  var lockScreen = document.getElementById('lockScreen');
+  var mainBox = document.getElementById('mainBox');
+  var input = document.getElementById('lockPassword');
+  var button = document.getElementById('lockButton');
+  var message = document.getElementById('lockMessage');
+
+  async function sha256Hex(text) {
+    var data = new TextEncoder().encode(text);
+    var buf = await crypto.subtle.digest('SHA-256', data);
+    return Array.from(new Uint8Array(buf)).map(function (b) { return b.toString(16).padStart(2, '0'); }).join('');
+  }
+
+  function unlock() {
+    try { sessionStorage.setItem(STORAGE_KEY, '1'); } catch (e) {}
+    lockScreen.style.display = 'none';
+    mainBox.style.display = 'block';
+  }
+
+  async function tryUnlock() {
+    button.disabled = true;
+    var hash;
+    try { hash = await sha256Hex(input.value); } catch (e) { message.textContent = 'この環境では確認できません(https のページで開いてください)'; button.disabled = false; return; }
+    button.disabled = false;
+    if (hash === PASSWORD_HASH) {
+      unlock();
+    } else {
+      message.textContent = 'パスワードが違います';
+      input.value = '';
+      input.focus();
+    }
+  }
+
+  var already = false;
+  try { already = sessionStorage.getItem(STORAGE_KEY) === '1'; } catch (e) {}
+  if (already) {
+    unlock();
+  } else {
+    input.focus();
+  }
+
+  button.addEventListener('click', tryUnlock);
+  input.addEventListener('keydown', function (e) { if (e.key === 'Enter') tryUnlock(); });
 })();
 </script>
 </body></html>
